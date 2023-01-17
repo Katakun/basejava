@@ -52,8 +52,8 @@ public class ArrayStorage {
         if (index < 0) {
             System.out.printf("ERROR: Resume with uuid '%s' not exist%n", uuid);
         } else {
-            System.arraycopy(storage, index + 1, storage, index, size - index - 1);
-            storage[size] = null;
+            storage[index] = storage[size - 1];
+            storage[size - 1] = null;
             size--;
         }
     }
