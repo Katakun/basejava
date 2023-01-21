@@ -1,5 +1,7 @@
 package com.urise.webapp.storage;
 
+import com.urise.webapp.model.Resume;
+
 public class ArrayStorage extends AbstractArrayStorage {
 
     @Override
@@ -10,5 +12,17 @@ public class ArrayStorage extends AbstractArrayStorage {
             }
         }
         return -1;
+    }
+
+    @Override
+    protected void insertResume(Resume r) {
+        storage[size] = r;
+    }
+
+    @Override
+    protected void deleteResume(String uuid) {
+        int index = getIndex(uuid);
+        storage[index] = storage[size - 1];
+        storage[size - 1] = null;
     }
 }
