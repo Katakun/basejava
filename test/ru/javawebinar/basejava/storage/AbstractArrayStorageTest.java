@@ -9,38 +9,42 @@ import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 public abstract class AbstractArrayStorageTest {
-    private Storage storage;
+
+    private static final String UUID_1 = "uuid1";
+    private static final String UUID_2 = "uuid2";
+    private static final String UUID_3 = "uuid3";
+    private static final String UUID_4 = "uuid4";
+    private static final String UUID_NOT_EXIST = "dummy";
+
+    private final Storage storage;
+    private final Resume RESUME_1 = new Resume(UUID_1);
+    private final Resume RESUME_2 = new Resume(UUID_2);
+    private final Resume RESUME_3 = new Resume(UUID_3);
+    private final Resume RESUME_4 = new Resume(UUID_4);
 
     public AbstractArrayStorageTest(Storage storage) {
         this.storage = storage;
     }
 
-    private static final String UUID_1 = "uuid1";
-    private static final String UUID_2 = "uuid2";
-    private static final String UUID_3 = "uuid3";
-
-
     @BeforeEach
     public void setUp() throws Exception {
         storage.clear();
-        storage.save(new Resume(UUID_1));
-        storage.save(new Resume(UUID_2));
-        storage.save(new Resume(UUID_3));
+        storage.save(RESUME_1);
+        storage.save(RESUME_2);
+        storage.save(RESUME_3);
     }
 
     @Test
     public void size() throws Exception {
-        Assertions.assertEquals(3, storage.size());
+        Assertions.assertTrue(assertSize(3));
     }
-
 
     @Test
     public void clear() throws Exception {
         storage.clear();
-        Assertions.assertEquals(0, storage.size());
-        Assertions.assertThrows(NotExistStorageException.class, () -> {
-            storage.get("uuid1");
-        });
+        Assertions.assertTrue(assertSize(0));
+        Resume[] empty = new Resume[0];
+        Assertions.assertArrayEquals(empty, storage.getAll());
     }
 
     @Test
@@ -60,15 +64,16 @@ public abstract class AbstractArrayStorageTest {
 
     @Test
     public void getAll() throws Exception {
-        Resume[] allResume = {new Resume("uuid1"), new Resume("uuid2"), new Resume("uuid3")};
+        Resume[] allResume = {RESUME_1, RESUME_2, RESUME_3};
         Assertions.assertArrayEquals(allResume, storage.getAll());
+        Assertions.assertTrue(assertSize(3));
     }
 
     @Test
     public void save() throws Exception {
-        Resume resume = new Resume("save_test");
-        storage.save(resume);
-        Assertions.assertEquals(storage.get("save_test"), resume);
+        storage.save(RESUME_4);
+        Assertions.assertTrue(assertGet(RESUME_4));
+        Assertions.assertTrue(assertSize(4));
     }
 
     @Test
@@ -79,11 +84,11 @@ public abstract class AbstractArrayStorageTest {
         });
     }
 
-
     @Test
     public void saveStorageOverflow() throws Exception {
         try {
-            for (int i = 4; i <= 10_000; i++) {
+            storage.clear();
+            for (int i = 1; i <= 10_000; i++) {
                 String uuid = "uuid" + i;
                 storage.save(new Resume(uuid));
             }
@@ -95,35 +100,42 @@ public abstract class AbstractArrayStorageTest {
         });
     }
 
-
     @Test
     public void delete() throws Exception {
-        storage.delete("uuid1");
-        Assertions.assertEquals(2, storage.size());
+        storage.delete(UUID_1);
+        Assertions.assertTrue(assertSize(2));
         Assertions.assertThrows(NotExistStorageException.class, () -> {
-            storage.get("uuid1");
+            storage.get(UUID_1);
         });
     }
 
     @Test
     public void deleteNotExistResume() throws Exception {
         Assertions.assertThrows(NotExistStorageException.class, () -> {
-            storage.delete("dummy");
+            storage.delete(UUID_NOT_EXIST);
         });
     }
 
-
     @Test
     public void get() throws Exception {
-        Resume test_resume = new Resume("test");
-        storage.save(test_resume);
-        Assertions.assertSame(storage.get("test"), test_resume);
+        Assertions.assertTrue(assertGet(RESUME_1));
+        Assertions.assertTrue(assertGet(RESUME_2));
+        Assertions.assertTrue(assertGet(RESUME_3));
     }
 
     @Test
     public void getNotExistResume() throws Exception {
         Assertions.assertThrows(NotExistStorageException.class, () -> {
-            storage.get("dummy");
+            storage.get(UUID_NOT_EXIST);
         });
+    }
+
+    private boolean assertGet(Resume resume) {
+        String uuid = resume.getUuid();
+        return resume.equals(storage.get(uuid));
+    }
+
+    private boolean assertSize(int expectedSize) {
+        return expectedSize == storage.size();
     }
 }
