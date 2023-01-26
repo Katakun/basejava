@@ -1,20 +1,10 @@
 package ru.javawebinar.basejava.storage;
 
-import org.junit.jupiter.api.Test;
+class SortedArrayStorageTest extends AbstractArrayStorageTest {
 
-import static org.junit.jupiter.api.Assertions.*;
-
-class SortedArrayStorageTest {
-
-    @Test
-    void fillDeletedElement() {
+    public SortedArrayStorageTest() {
+        super(new SortedArrayStorage());
     }
 
-    @Test
-    void insertElement() {
-    }
 
-    @Test
-    void getIndex() {
-    }
 }
