@@ -15,7 +15,8 @@ public class ArrayStorage extends AbstractArrayStorage {
     @Override
     protected void insertElement(Resume r, int index) {
         storage[size] = r;
-    }
+     }
+
 
     @Override
     protected int getIndex(String uuid) {
@@ -26,4 +27,6 @@ public class ArrayStorage extends AbstractArrayStorage {
         }
         return -1;
     }
+
+
 }
