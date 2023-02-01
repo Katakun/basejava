@@ -7,8 +7,6 @@ import ru.javawebinar.basejava.model.Resume;
  */
 public class ListStorage extends AbstractStorage {
 
-//    protected ArrayList<Resume> storage = new ArrayList<>();
-
     @Override
     protected void insertElement(Resume r, int index) {
         storage.add(index, r);

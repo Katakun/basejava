@@ -10,7 +10,6 @@ public abstract class AbstractStorage implements Storage {
 
     protected ArrayList<Resume> storage = new ArrayList<>();
 
-
     public void clear() {
         storage.clear();
     }
@@ -49,7 +48,7 @@ public abstract class AbstractStorage implements Storage {
         if (index < 0) {
             throw new NotExistStorageException(r.getUuid());
         } else {
-           insertElement(r, index);
+            insertElement(r, index);
         }
     }
 
