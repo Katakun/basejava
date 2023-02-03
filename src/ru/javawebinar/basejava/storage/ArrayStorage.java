@@ -37,5 +37,4 @@ public class ArrayStorage extends AbstractArrayStorage {
         int index = (int) searchKey;
         storage[index] = resume;
     }
-
 }

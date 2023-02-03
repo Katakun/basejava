@@ -15,7 +15,6 @@ public class SortedArrayStorage extends AbstractArrayStorage {
         }
     }
 
-
     @Override
     protected Object getSearchKey(String uuid) {
         Resume searchKey = new Resume(uuid);
@@ -39,5 +38,4 @@ public class SortedArrayStorage extends AbstractArrayStorage {
         int index = (int) searchKey;
         storage[index] = resume;
     }
-
 }

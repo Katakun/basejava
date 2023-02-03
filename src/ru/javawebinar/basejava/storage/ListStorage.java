@@ -40,6 +40,4 @@ public class ListStorage extends AbstractStorage {
         int index = (int) searchKey;
         storage.remove(index);
     }
-
-
 }
