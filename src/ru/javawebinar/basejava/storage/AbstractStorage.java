@@ -4,11 +4,11 @@ import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractStorage implements Storage {
 
-    protected ArrayList<Resume> storage = new ArrayList<>();
+    protected List<Resume> storage;
 
     public void clear() {
         storage.clear();
@@ -70,7 +70,7 @@ public abstract class AbstractStorage implements Storage {
 
     protected abstract void doSave(Resume resume);
 
-    protected abstract void doUpdate(Object searhKey, Resume resume);
+    protected abstract void doUpdate(Object searchKey, Resume resume);
 
     protected abstract void doDelete(Object searchKey);
 }

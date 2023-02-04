@@ -2,10 +2,16 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.model.Resume;
 
+import java.util.ArrayList;
+
 /*
  * ArrayList based storage for resumes
  */
 public class ListStorage extends AbstractStorage {
+
+    public ListStorage() {
+        super.storage = new ArrayList<Resume>();
+    }
 
     @Override
     protected boolean isExist(Object searchKey) {
@@ -15,7 +21,12 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     protected Object getSearchKey(String uuid) {
-        return storage.indexOf(new Resume(uuid));
+        for (int i = 0; i < storage.size(); i++) {
+            if (uuid.equals(storage.get(i).getUuid())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override
