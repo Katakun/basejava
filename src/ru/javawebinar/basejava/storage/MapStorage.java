@@ -10,7 +10,7 @@ public class MapStorage extends AbstractStorage {
     protected final Map<String, Resume> storage;
 
     public MapStorage() {
-        this.storage = new LinkedHashMap<>();
+        storage = new LinkedHashMap<>();
     }
 
     @Override
