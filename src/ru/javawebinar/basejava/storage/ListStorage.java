@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class ListStorage extends AbstractStorage {
 
-    List<Resume> storage;
+    protected final List<Resume> storage;
 
     public ListStorage() {
         storage = new ArrayList<>();
