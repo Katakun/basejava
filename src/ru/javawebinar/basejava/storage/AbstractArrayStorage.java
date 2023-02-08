@@ -12,16 +12,16 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     protected Resume[] storage = new Resume[STORAGE_LIMIT];
     protected int size = 0;
 
-    public int size() {
+    public int getSize() {
         return size;
     }
 
-    public void clear() {
+    public void doClear() {
         Arrays.fill(storage, 0, size, null);
         size = 0;
     }
 
-    public Resume[] getAll() {
+    public Resume[] doGetAll() {
         return Arrays.copyOfRange(storage, 0, size);
     }
 

@@ -3,14 +3,17 @@ package ru.javawebinar.basejava.storage;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /*
  * ArrayList based storage for resumes
  */
 public class ListStorage extends AbstractStorage {
 
+    List<Resume> storage;
+
     public ListStorage() {
-        super.storage = new ArrayList<Resume>();
+        storage = new ArrayList<>();
     }
 
     @Override
@@ -50,5 +53,20 @@ public class ListStorage extends AbstractStorage {
     protected void doDelete(Object searchKey) {
         int index = (int) searchKey;
         storage.remove(index);
+    }
+
+    @Override
+    protected void doClear() {
+        storage.clear();
+    }
+
+    @Override
+    protected int getSize() {
+        return storage.size();
+    }
+
+    @Override
+    protected Resume[] doGetAll() {
+        return storage.toArray(new Resume[0]);
     }
 }
