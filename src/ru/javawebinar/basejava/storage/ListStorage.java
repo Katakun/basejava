@@ -10,11 +10,7 @@ import java.util.List;
  */
 public class ListStorage extends AbstractStorage {
 
-    protected final List<Resume> storage;
-
-    public ListStorage() {
-        storage = new ArrayList<>();
-    }
+    protected final List<Resume> storage = new ArrayList<>();
 
     @Override
     protected boolean isExist(Object searchKey) {

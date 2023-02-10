@@ -7,11 +7,7 @@ import java.util.Map;
 
 public class MapStorage extends AbstractStorage {
 
-    protected final Map<String, Resume> storage;
-
-    public MapStorage() {
-        storage = new LinkedHashMap<>();
-    }
+    protected final Map<String, Resume> storage = new LinkedHashMap<>();
 
     @Override
     protected boolean isExist(Object searchKey) {
