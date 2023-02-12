@@ -5,64 +5,56 @@ import ru.javawebinar.basejava.model.Resume;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
- * ArrayList based storage for resumes
- */
 public class ListStorage extends AbstractStorage {
-
-    protected final List<Resume> storage = new ArrayList<>();
-
-    @Override
-    protected boolean isExist(Object searchKey) {
-        int index = (int) searchKey;
-        return index >= 0;
-    }
+    private List<Resume> list = new ArrayList<>();
 
     @Override
-    protected Object getSearchKey(String uuid) {
-        for (int i = 0; i < storage.size(); i++) {
-            if (uuid.equals(storage.get(i).getUuid())) {
+    protected Integer getSearchKey(String uuid) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getUuid().equals(uuid)) {
                 return i;
             }
         }
-        return -1;
+        return null;
+    }
+
+    @Override
+    protected boolean isExist(Object searchKey) {
+        return searchKey != null;
+    }
+
+    @Override
+    protected void doUpdate(Resume r, Object searchKey) {
+        list.set((Integer) searchKey, r);
+    }
+
+    @Override
+    protected void doSave(Resume r, Object searchKey) {
+        list.add(r);
     }
 
     @Override
     protected Resume doGet(Object searchKey) {
-        int index = (int) searchKey;
-        return storage.get(index);
-    }
-
-    @Override
-    protected void doSave(Resume resume) {
-        storage.add(resume);
-    }
-
-    @Override
-    protected void doUpdate(Object searchKey, Resume resume) {
-        int index = (int) searchKey;
-        storage.add(index, resume);
+        return list.get((Integer) searchKey);
     }
 
     @Override
     protected void doDelete(Object searchKey) {
-        int index = (int) searchKey;
-        storage.remove(index);
+        list.remove(((Integer) searchKey).intValue());
     }
 
     @Override
-    protected void doClear() {
-        storage.clear();
+    public void clear() {
+        list.clear();
     }
 
     @Override
-    protected int getSize() {
-        return storage.size();
+    public Resume[] getAll() {
+        return list.toArray(new Resume[list.size()]);
     }
 
     @Override
-    protected Resume[] doGetAll() {
-        return storage.toArray(new Resume[0]);
+    public int size() {
+        return list.size();
     }
 }

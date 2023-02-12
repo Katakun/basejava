@@ -6,73 +6,51 @@ import ru.javawebinar.basejava.model.Resume;
 
 public abstract class AbstractStorage implements Storage {
 
-    public void clear() {
-        doClear();
+    protected abstract Object getSearchKey(String uuid);
+
+    protected abstract void doUpdate(Resume r, Object searchKey);
+
+    protected abstract boolean isExist(Object searchKey);
+
+    protected abstract void doSave(Resume r, Object searchKey);
+
+    protected abstract Resume doGet(Object searchKey);
+
+    protected abstract void doDelete(Object searchKey);
+
+    public void update(Resume r) {
+        Object searchKey = getExistedSearchKey(r.getUuid());
+        doUpdate(r, searchKey);
     }
 
-    @Override
+    public void save(Resume r) {
+        Object searchKey = getNotExistedSearchKey(r.getUuid());
+        doSave(r, searchKey);
+    }
+
     public void delete(String uuid) {
-        Object searchKey = getExistingSearchKey(uuid);
+        Object searchKey = getExistedSearchKey(uuid);
         doDelete(searchKey);
     }
 
     public Resume get(String uuid) {
-        Object searchKey = getExistingSearchKey(uuid);
+        Object searchKey = getExistedSearchKey(uuid);
         return doGet(searchKey);
     }
 
-    public Resume[] getAll() {
-        return doGetAll();
-    }
-
-    public void save(Resume r) {
-        getNotExistingSearchKey(r.getUuid());
-        doSave(r);
-    }
-
-    @Override
-    public void update(Resume r) {
-        Object searchKey = getExistingSearchKey(r.getUuid());
-        doUpdate(searchKey, r);
-    }
-
-    public int size() {
-        return getSize();
-    }
-
-    private Object getExistingSearchKey(String uuid) {
+    private Object getExistedSearchKey(String uuid) {
         Object searchKey = getSearchKey(uuid);
-        if (isExist(searchKey)) {
-            return searchKey;
-        } else {
+        if (!isExist(searchKey)) {
             throw new NotExistStorageException(uuid);
         }
+        return searchKey;
     }
 
-    private Object getNotExistingSearchKey(String uuid) {
+    private Object getNotExistedSearchKey(String uuid) {
         Object searchKey = getSearchKey(uuid);
         if (isExist(searchKey)) {
             throw new ExistStorageException(uuid);
-        } else {
-            return searchKey;
         }
+        return searchKey;
     }
-
-    protected abstract boolean isExist(Object searchKey);
-
-    protected abstract Object getSearchKey(String uuid);
-
-    protected abstract Resume doGet(Object searchKey);
-
-    protected abstract void doSave(Resume resume);
-
-    protected abstract void doUpdate(Object searchKey, Resume resume);
-
-    protected abstract void doDelete(Object searchKey);
-
-    protected abstract void doClear();
-
-    protected abstract int getSize();
-
-    protected abstract Resume[] doGetAll();
 }

@@ -26,13 +26,13 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    protected void doSave(Resume resume) {
-        String key = resume.getUuid();
+    protected void doSave(Resume resume, Object searchKey) {
+        String key = (String) searchKey;
         storage.put(key, resume);
     }
 
     @Override
-    protected void doUpdate(Object searchKey, Resume resume) {
+    protected void doUpdate(Resume resume, Object searchKey) {
         String key = (String) searchKey;
         storage.put(key, resume);
     }
@@ -44,17 +44,17 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    protected void doClear() {
+    public void clear() {
         storage.clear();
     }
 
     @Override
-    protected int getSize() {
+    public int size() {
         return storage.size();
     }
 
     @Override
-    protected Resume[] doGetAll() {
+    public Resume[] getAll() {
         return storage.values().toArray(new Resume[0]);
     }
 }
