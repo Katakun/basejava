@@ -38,7 +38,7 @@ public class MainCollections {
                 iterator.remove();
             }
         }
-        System.out.println(collection.toString());
+        System.out.println(collection);
 
 
         Map<String, Resume> map = new HashMap<>();

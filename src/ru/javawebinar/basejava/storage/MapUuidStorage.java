@@ -5,7 +5,7 @@ import ru.javawebinar.basejava.model.Resume;
 import java.util.*;
 
 public class MapUuidStorage extends AbstractStorage {
-    private Map<String, Resume> storage = new HashMap<>();
+    private final Map<String, Resume> storage = new HashMap<>();
 
     @Override
     protected String getSearchKey(String uuid) {
@@ -32,7 +32,7 @@ public class MapUuidStorage extends AbstractStorage {
 
     @Override
     protected Resume doGet(Object searchKey) {
-        return storage.get(searchKey);
+        return storage.get((String) searchKey);
     }
 
     @Override

@@ -62,7 +62,7 @@ public class MapStorage extends AbstractStorage {
         Set<String> keys = storage.keySet();
         String[] keysArr = keys.toArray(new String[0]);
         for (int i = 0; i < keysArr.length; i++) {
-            if (uuid.equals((String) keysArr[i])) {
+            if (uuid.equals(keysArr[i])) {
                 return i;
             }
         }
