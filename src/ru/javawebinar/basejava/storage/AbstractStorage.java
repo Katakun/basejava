@@ -4,6 +4,8 @@ import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
+import java.util.List;
+
 public abstract class AbstractStorage implements Storage {
 
     protected abstract Object getSearchKey(String uuid);
@@ -15,6 +17,8 @@ public abstract class AbstractStorage implements Storage {
     protected abstract void doSave(Resume r, Object searchKey);
 
     protected abstract Resume doGet(Object searchKey);
+
+    protected abstract List<Resume> doGetAllSorted();
 
     protected abstract void doDelete(Object searchKey);
 
@@ -36,6 +40,10 @@ public abstract class AbstractStorage implements Storage {
     public Resume get(String uuid) {
         Object searchKey = getExistedSearchKey(uuid);
         return doGet(searchKey);
+    }
+
+    public List<Resume> getAllSorted() {
+        return doGetAllSorted();
     }
 
     private Object getExistedSearchKey(String uuid) {
