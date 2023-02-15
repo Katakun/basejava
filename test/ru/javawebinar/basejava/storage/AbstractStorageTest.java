@@ -20,9 +20,9 @@ public abstract class AbstractStorageTest {
     private static final String UUID_4 = "uuid4";
 
     private static final String FULL_NAME_1 = "Aaa Aaa";
-    private static final String FULL_NAME_2 = "Bbb Bbb";
+    private static final String FULL_NAME_2 = "Ddd Ddd";
     private static final String FULL_NAME_3 = "Bbb Bbb";
-    private static final String FULL_NAME_4 = "Ccc Ccc";
+    private static final String FULL_NAME_4 = "Aaa Aaa";
 
 
     private static final Resume RESUME_1;
@@ -74,11 +74,13 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void getAllSorted() throws Exception {
+        storage.save(RESUME_4);
         List<Resume> resumes = storage.getAllSorted();
-        assertEquals(3, resumes.size());
+        assertEquals(4, resumes.size());
         assertEquals(RESUME_1, resumes.get(0));
-        assertEquals(RESUME_2, resumes.get(1));
+        assertEquals(RESUME_4, resumes.get(1));
         assertEquals(RESUME_3, resumes.get(2));
+        assertEquals(RESUME_2, resumes.get(3));
     }
 
     @Test

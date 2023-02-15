@@ -50,8 +50,8 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected List<Resume> doGetAllSorted() {
-        list.sort(Comparator.comparing(Resume::getUuid)
+    public List<Resume> getAllSorted() {
+        list.sort(Comparator.comparing(Resume::getFullName)
                 .thenComparing(Resume::getUuid));
         return list;
     }
