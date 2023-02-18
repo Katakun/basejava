@@ -9,35 +9,39 @@ public class MapStorage extends AbstractStorage {
 
     @Override
     protected boolean isExist(Object searchKey) {
-        int searchKeyInt = (int) searchKey;
-        return searchKeyInt >= 0;
+        return storage.containsValue((Resume) searchKey);
     }
 
     @Override
     protected Object getSearchKey(String uuid) {
-        return uuidToIndex(uuid);
+        if (storage.containsKey(uuid)) {
+            return storage.get(uuid);
+        }
+        return new Resume(uuid, "");
+
     }
 
     @Override
     protected Resume doGet(Object searchKey) {
-        return storage.get(searchKeyToUuid(searchKey));
+        return (Resume) searchKey;
     }
 
     @Override
     protected void doSave(Resume resume, Object searchKey) {
-        storage.put(resume.getUuid(), resume);
+        Resume searchKeyResume = (Resume) searchKey;
+        storage.put(searchKeyResume.getUuid(), resume);
     }
 
     @Override
     protected void doUpdate(Resume resume, Object searchKey) {
-        String key = searchKeyToUuid(searchKey);
-        storage.put(key, resume);
+        Resume searchKeyarchKeyResume = (Resume) searchKey;
+        storage.put(searchKeyarchKeyResume.getUuid(), resume);
     }
 
     @Override
     protected void doDelete(Object searchKey) {
-        String key = searchKeyToUuid(searchKey);
-        storage.remove(key);
+        Resume searchKeyResume = (Resume) searchKey;
+        storage.remove(searchKeyResume.getUuid());
     }
 
     @Override
@@ -51,28 +55,7 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    public List<Resume> getAllSorted() {
-        List<Resume> resumes = new ArrayList<>(storage.values());
-        resumes.sort(Comparator.comparing(Resume::getFullName)
-                .thenComparing(Resume::getUuid));
-        return resumes;
-    }
-
-    private int uuidToIndex(String uuid) {
-        Set<String> keys = storage.keySet();
-        String[] keysArr = keys.toArray(new String[0]);
-        for (int i = 0; i < keysArr.length; i++) {
-            if (uuid.equals(keysArr[i])) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    private String searchKeyToUuid(Object searchKey) {
-        int searchKeyInt = (int) searchKey;
-        Set<String> keys = storage.keySet();
-        String[] keysArr = keys.toArray(new String[0]);
-        return keysArr[searchKeyInt];
+    public List<Resume> getAllResume() {
+        return new ArrayList<>(storage.values());
     }
 }
