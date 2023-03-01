@@ -9,7 +9,7 @@ public class ResumeTestData {
 
     private static Random random = new Random();
 
-    private static Resume getRandomResume(String uuid, String fullName) {
+    public static Resume getRandomResume(String uuid, String fullName) {
         Resume resume = new Resume(uuid, fullName);
 
         resume.setContact(ContactType.MOBILE, randomPhoneNumber());
@@ -56,7 +56,7 @@ public class ResumeTestData {
         List<Organization> organizations = new ArrayList<>();
         for (int j = 0; j < count; j++) {
             List<Period> periods = new ArrayList<>();
-            for (int i = 0; i < 3; i++) {
+            for (int i = 1; i < 3; i++) {
                 LocalDate startDate = LocalDate.of(2000 + i, i, 1);
                 LocalDate endDate = LocalDate.of(2001 + i, i, 1);
                 Period period = new Period(randomWord(5), randomSentence(3),
