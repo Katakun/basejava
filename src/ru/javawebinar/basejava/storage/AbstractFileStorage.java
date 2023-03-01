@@ -5,6 +5,7 @@ import ru.javawebinar.basejava.model.Resume;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,12 +29,18 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     public void clear() {
-
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                file.delete();
+            }
+        }
     }
 
     @Override
     public int size() {
-        return 0;
+        File[] files = directory.listFiles();
+        return files.length;
     }
 
     @Override
@@ -43,7 +50,11 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected void doUpdate(Resume r, File file) {
-
+        try {
+            doWrite(r, file);
+        } catch (IOException e) {
+            throw new StorageException("IO error", file.getName(), e);
+        }
     }
 
     @Override
@@ -63,18 +74,41 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     protected abstract void doWrite(Resume r, File file) throws IOException;
 
+    protected abstract Resume doReade(File file) throws IOException;
+
     @Override
     protected Resume doGet(File file) {
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.getName().equals(file.getName())) {
+                    try {
+                        return doReade(file);
+                    } catch (IOException e) {
+                        throw new StorageException("IO error", file.getName(), e);
+                    }
+                }
+            }
+        }
         return null;
     }
 
     @Override
     protected void doDelete(File file) {
-
+        file.delete();
     }
 
     @Override
     protected List<Resume> doCopyAll() {
-        return null;
+        List<Resume> resumes = new ArrayList<>();
+        File[] files = directory.listFiles();
+        for (File file : files) {
+            try {
+                resumes.add(doReade(file));
+            } catch (IOException e) {
+                throw new StorageException("IO error", file.getName(), e);
+            }
+        }
+        return resumes;
     }
 }

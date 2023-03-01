@@ -74,7 +74,7 @@ public class ResumeTestData {
         StringBuilder sb = new StringBuilder();
         sb.append("+7");
         for (int i = 0; i < 10; i++) {
-            sb.append(random.nextInt());
+            sb.append(random.nextInt(9));
         }
         return sb.toString();
     }
