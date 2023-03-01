@@ -8,7 +8,7 @@ public class MainString {
         for (String str : strArray) {
             sb.append(str).append(", ");
         }
-        System.out.println(sb);
+        System.out.println(sb.toString());
 
         String str1 = "abc";
         String str3 = "c";

@@ -1,275 +1,101 @@
 package ru.javawebinar.basejava.model;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class ResumeTestData {
 
-    public static void main(String[] args) {
+    private static Random random = new Random();
 
-        Period mftiEducation = new Period(
-                "Закончил с отличием",
-                LocalDate.of(1984, 9, 1),
-                LocalDate.of(1987, 6, 1));
+    private static Resume getRandomResume(String uuid, String fullName) {
+        Resume resume = new Resume(uuid, fullName);
 
-        Period spbniuitmoEducation1 = new Period(
-                "Аспирантура (программист С, С++)",
-                LocalDate.of(1993, 9, 1),
-                LocalDate.of(1996, 7, 1));
+        resume.setContact(ContactType.MOBILE, randomPhoneNumber());
+        resume.setContact(ContactType.HOME_PHONE, randomPhoneNumber());
+        resume.setContact(ContactType.PHONE, randomPhoneNumber());
+        resume.setContact(ContactType.HOME_PAGE, randomWord(7));
+        resume.setContact(ContactType.MAIL, randomWord(10));
+        resume.setContact(ContactType.LINKEDIN, randomWord(15));
+        resume.setContact(ContactType.GITHUB, randomWord(15));
+        resume.setContact(ContactType.SKYPE, randomWord(5));
+        resume.setContact(ContactType.STATCKOVERFLOW, randomWord(15));
 
-        Period spbniuitmoEducation2 = new Period(
-                "Инженер (программист Fortran, C)",
-                LocalDate.of(1987, 9, 1),
-                LocalDate.of(1993, 7, 1));
+        // TextSection
+        Section personal = new TextSection(randomSentence(40));
+        Section objective = new TextSection(randomSentence(40));
+        resume.setSection(SectionType.PERSONAL, personal);
+        resume.setSection(SectionType.OBJECTIVE, objective);
 
-        Period alcatelEducation = new Period(
-                "6 месяцев обучения цифровым телефонным сетям (Москва)",
-                LocalDate.of(1997, 9, 1),
-                LocalDate.of(1998, 3, 1));
-
-        Period siemensEduacation = new Period(
-                "3 месяца обучения мобильным IN сетям (Берлин)",
-                LocalDate.of(2005, 1, 1),
-                LocalDate.of(2005, 4, 1));
-
-        Period luxoftEducation = new Period(
-                "Курс 'Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.'",
-                LocalDate.of(2011, 3, 1),
-                LocalDate.of(2011, 4, 1));
-
-        Period courseraEducation = new Period(
-                "'Functional Programming Principles in Scala' by Martin Odersky",
-                LocalDate.of(2013, 3, 1),
-                LocalDate.of(2013, 5, 1));
-
-        Period alcatelWork = new Period(
-                "Инженер по аппаратному и программному тестированию",
-                "Тестирование, отладка, внедрение ПО цифровой телефонной станции Alcatel 1000 S12 (CHILL, ASM).",
-                LocalDate.of(1997, 9, 1),
-                LocalDate.of(2005, 1, 1));
-
-        Period siemensWork = new Period(
-                "Разработчик ПО",
-                "Разработка информационной модели, проектирование интерфейсов, реализация и отладка ПО на " +
-                        "мобильной IN платформе Siemens @vantage (Java, Unix).",
-                LocalDate.of(2005, 1, 1),
-                LocalDate.of(2007, 2, 1));
-
-        Period encataWork = new Period(
-                "Разработчик ПО",
-                "Реализация клиентской (Eclipse RCP) и серверной (JBoss 4.2, Hibernate 3.0, Tomcat, JMS) " +
-                        "частей кластерного J2EE приложения (OLAP, Data mining).",
-                LocalDate.of(2007, 3, 1),
-                LocalDate.of(2008, 6, 1));
-
-        Period yotaWork = new Period(
-                "Ведущий специалист",
-                "Дизайн и имплементация Java EE фреймворка для отдела \"Платежные Системы\" (GlassFish v2.1, v3, OC4J, " +
-                        "EJB3, JAX-WS RI 2.1, Servlet 2.4, JSP, JMX, JMS, Maven2). Реализация администрирования, " +
-                        "статистики и мониторинга фреймворка. Разработка online JMX клиента (Python/ Jython, Django, ExtJS)",
-                LocalDate.of(2008, 6, 1),
-                LocalDate.of(2010, 12, 1));
-
-        Period luxoftWork = new Period(
-                "Ведущий программист",
-                "Участие в проекте Deutsche Bank CRM (WebLogic, Hibernate, Spring, Spring MVC, SmartGWT, GWT, " +
-                        "Jasper, Oracle). Реализация клиентской и серверной части CRM. Реализация RIA-приложения для " +
-                        "администрирования, мониторинга и анализа результатов в области алгоритмического трейдинга. JPA, " +
-                        "Spring, Spring-MVC, GWT, ExtGWT (GXT), Highstock, Commet, HTML5.",
-                LocalDate.of(2010, 12, 1),
-                LocalDate.of(2012, 4, 1));
-
-        Period ritCenterWork = new Period(
-                "Java архитектор",
-                "Организация процесса разработки системы ERP для разных окружений: релизная политика, " +
-                        "версионирование, ведение CI (Jenkins), миграция базы (кастомизация Flyway), конфигурирование " +
-                        "системы (pgBoucer, Nginx), AAA via SSO. Архитектура БД и серверной части системы. Разработка " +
-                        "интергационных сервисов: CMIS, BPMN2, 1C (WebServices), сервисов общего назначения (почта, " +
-                        "экспорт в pdf, doc, html). Интеграция Alfresco JLAN для online редактирование из браузера " +
-                        "документов MS Office. Maven + plugin development, Ant, Apache Commons, Spring security, Spring MVC, " +
-                        "Tomcat,WSO2, xcmis, OpenCmis, Bonita, Python scripting, Unix shell remote scripting via ssh tunnels, PL/Python",
-                LocalDate.of(2012, 4, 1),
-                LocalDate.of(2014, 10, 1));
-
-        Period wrikeWork = new Period(
-                "Старший разработчик (backend)",
-                "Проектирование и разработка онлайн платформы управления проектами Wrike (Java 8 API, Maven, " +
-                        "Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis). Двухфакторная аутентификация, авторизация " +
-                        "по OAuth1, OAuth2, JWT SSO.",
-                LocalDate.of(2014, 10, 1),
-                LocalDate.of(2016, 1, 1));
-
-        Period javaOnlineProjectWork = new Period(
-                "Автор проекта",
-                "Создание, организация и проведение Java онлайн проектов и стажировок.",
-                LocalDate.of(2013, 10, 1),
-                LocalDate.now());
-
-
-        Company schoolMftiCompanyEd = new Company(
-                "Заочная физико-техническая школа при МФТИ",
-                "https://mipt.ru/",
-                new ArrayList<>(Arrays.asList(mftiEducation)));
-
-        Company spbniuitmoCompanyEd = new Company(
-                "Санкт-Петербургский национальный исследовательский университет " +
-                        "информационных технологий, механики и оптики",
-                "http://www.ifmo.ru/",
-                new ArrayList<>(Arrays.asList(spbniuitmoEducation1, spbniuitmoEducation2)));
-
-        Company alcatelCompanyEd = new Company(
-                "Alcatel",
-                "http://www.alcatel.ru/",
-                new ArrayList<>(Arrays.asList(alcatelEducation)));
-
-        Company siemensCompanyEd = new Company(
-                "Siemens AG",
-                "http://www.siemens.ru/",
-                new ArrayList<>(Arrays.asList(siemensEduacation)));
-
-        Company luxsoftCompanyEd = new Company(
-                "Luxoft",
-                "http://www.luxoft-training.ru/training/catalog/course.html?ID=22366",
-                new ArrayList<>(Arrays.asList(luxoftEducation)));
-
-        Company courseraCompanyEd = new Company(
-                "Coursera",
-                "https://www.coursera.org/course/progfun",
-                new ArrayList<>(Arrays.asList(courseraEducation)));
-
-        Company alcatelCompanyWork = new Company(
-                "Alcatel",
-                "http://www.alcatel.ru/",
-                new ArrayList<>(Arrays.asList(alcatelWork)));
-
-        Company siemensCompanyWork = new Company(
-                "Siemens AG",
-                "https://www.siemens.com/ru/ru/home.html",
-                new ArrayList<>(Arrays.asList(siemensWork)));
-
-        Company enkataCompanyWork = new Company(
-                "Enkata",
-                "http://enkata.com/",
-                new ArrayList<>(Arrays.asList(encataWork)));
-
-        Company yotaCompanyWork = new Company(
-                "Yota",
-                "https://www.yota.ru/",
-                new ArrayList<>(Arrays.asList(yotaWork)));
-
-        Company luxoftCompanyWork = new Company(
-                "Luxoft (Deutsche Bank)",
-                "http://www.luxoft.ru/",
-                new ArrayList<>(Arrays.asList(luxoftWork)));
-
-        Company ritCenterCompanyWork = new Company(
-                "RIT Center",
-                new ArrayList<>(Arrays.asList(ritCenterWork)));
-
-        Company wrikeCompanyWork = new Company(
-                "Wrike",
-                "https://www.wrike.com/",
-                new ArrayList<>(Arrays.asList(wrikeWork)));
-
-        Company javaOnlineProjectsCompanyWork = new Company(
-                "Java Online Projects",
-                "http://javaops.ru/",
-                new ArrayList<>(Arrays.asList(javaOnlineProjectWork)));
-
-        List<Company> workCompanies = new ArrayList<>();
-        workCompanies.add(javaOnlineProjectsCompanyWork);
-        workCompanies.add(wrikeCompanyWork);
-        workCompanies.add(ritCenterCompanyWork);
-        workCompanies.add(luxoftCompanyWork);
-        workCompanies.add(yotaCompanyWork);
-        workCompanies.add(enkataCompanyWork);
-        workCompanies.add(siemensCompanyWork);
-        workCompanies.add(alcatelCompanyWork);
-        AbstractSection workSection = new CompanySection(workCompanies);
-
-        List<Company> educationCompanies = new ArrayList<>();
-        educationCompanies.add(courseraCompanyEd);
-        educationCompanies.add(luxsoftCompanyEd);
-        educationCompanies.add(siemensCompanyEd);
-        educationCompanies.add(alcatelCompanyEd);
-        educationCompanies.add(spbniuitmoCompanyEd);
-        educationCompanies.add(schoolMftiCompanyEd);
-        AbstractSection educationSection = new CompanySection(educationCompanies);
+        // ListSection
+        List<String> achievement = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            achievement.add(randomSentence(30));
+        }
+        Section achievementSection = new ListSection(achievement);
+        resume.setSection(SectionType.ACHIEVEMENT, achievementSection);
 
         List<String> qualifications = new ArrayList<>();
-        qualifications.add("JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2");
-        qualifications.add("Version control: Subversion, Git, Mercury, ClearCase, Perforce");
-        qualifications.add("DB: PostgreSQL(наследование, pgplsql, PL/Python), Redis (Jedis), H2, Oracle, MySQL, " +
-                "SQLite, MS SQL, HSQLDB");
-        qualifications.add("Languages: Java, Scala, Python/Jython/PL-Python, JavaScript, Groovy");
-        qualifications.add("XML/XSD/XSLT, SQL, C/C++, Unix shell scripts");
-        qualifications.add("Java Frameworks: Java 8 (Time API, Streams), Guava, Java Executor, MyBatis, Spring (MVC, " +
-                "Security, Data, Clouds, Boot), JPA (Hibernate, EclipseLink), Guice, GWT(SmartGWT, ExtGWT/GXT), " +
-                "Vaadin, Jasperreports, Apache Commons, Eclipse SWT, JUnit, Selenium (htmlelements).");
-        qualifications.add("Python: Django");
-        qualifications.add("JavaScript: jQuery, ExtJS, Bootstrap.js, underscore.js");
-        qualifications.add("Scala: SBT, Play2, Specs2, Anorm, Spray, Akka");
-        qualifications.add("Технологии: Servlet, JSP/JSTL, JAX-WS, REST, EJB, RMI, JMS, JavaMail, JAXB, StAX, SAX, " +
-                "DOM, XSLT, MDB, JMX, JDBC, JPA, JNDI, JAAS, SOAP, AJAX, Commet, HTML5, ESB, CMIS, BPMN2, LDAP, " +
-                "OAuth1, OAuth2, JWT.");
-        qualifications.add("Инструменты: Maven + plugin development, Gradle, настройка Ngnix");
-        qualifications.add("администрирование Hudson/Jenkins, Ant + custom task, SoapUI, JPublisher, Flyway, Nagios, " +
-                "iReport, OpenCmis, Bonita, pgBouncer");
-        qualifications.add("Отличное знание и опыт применения концепций ООП, SOA, шаблонов проектрирования, " +
-                "архитектурных шаблонов, UML, функционального программирования");
-        qualifications.add("Родной русский, английский \"upper intermediate\"");
-        ListSection qualificationSection = new ListSection(qualifications);
+        for (int i = 0; i < 10; i++) {
+            qualifications.add(randomSentence(30));
+        }
+        Section qualificationsSection = new ListSection(qualifications);
+        resume.setSection(SectionType.QUALIFICATIONS, qualificationsSection);
 
-        List<String> achievement = new ArrayList<>();
-        achievement.add("Организация команды и успешная реализация Java проектов для сторонних заказчиков: приложения " +
-                "автопарк на стеке Spring Cloud/микросервисы, система мониторинга показателей спортсменов на Spring Boot, " +
-                "участие в проекте МЭШ на Play-2, многомодульный Spring Boot + Vaadin проект для комплексных DIY смет");
-        achievement.add("С 2013 года: разработка проектов \"Разработка Web приложения\",\"Java Enterprise\", \"" +
-                "Многомодульный maven. Многопоточность. XML (JAXB/StAX). Веб сервисы (JAX-RS/SOAP). Удаленное " +
-                "взаимодействие (JMS/AKKA)\". Организация онлайн стажировок и ведение проектов. Более 3500 выпускников.");
-        achievement.add("Реализация двухфакторной аутентификации для онлайн платформы управления проектами Wrike. " +
-                "Интеграция с Twilio, DuoSecurity, Google Authenticator, Jira, Zendesk.");
-        achievement.add("Налаживание процесса разработки и непрерывной интеграции ERP системы River BPM. Интеграция с 1С, " +
-                "Bonita BPM, CMIS, LDAP. Разработка приложения управления окружением на стеке: Scala/Play/Anorm/JQuery. " +
-                "Разработка SSO аутентификации и авторизации различных ERP модулей, интеграция CIFS/SMB java сервера.");
-        achievement.add("Реализация c нуля Rich Internet Application приложения на стеке технологий JPA, Spring, " +
-                "Spring-MVC, GWT, ExtGWT (GXT), Commet, HTML5, Highstock для алгоритмического трейдинга.");
-        achievement.add("Создание JavaEE фреймворка для отказоустойчивого взаимодействия слабо-связанных сервисов " +
-                "(SOA-base архитектура, JAX-WS, JMS, AS Glassfish). Сбор статистики сервисов и информации о состоянии " +
-                "через систему мониторинга Nagios. Реализация онлайн клиента для администрирования и мониторинга системы " +
-                "по JMX (Jython/ Django).");
-        achievement.add("Реализация протоколов по приему платежей всех основных платежных системы России (Cyberplat, " +
-                "Eport, Chronopay, Сбербанк), Белоруcсии(Erip, Osmp) и Никарагуа.");
-        ListSection achievementSection = new ListSection(achievement);
+        // OrganizationSection
+        Section experienceSection = new OrganizationSection(randomOrganization(5));
+        Section educationSection = new OrganizationSection(randomOrganization(5));
+        resume.setSection(SectionType.EXPERIENCE, experienceSection);
+        resume.setSection(SectionType.EDUCATION, educationSection);
 
-        TextSection personalSection = new TextSection("Аналитический склад ума, сильная логика, креативность, " +
-                "инициативность. Пурист кода и архитектуры.");
+        return resume;
+    }
 
-        TextSection objectiveSection = new TextSection("Ведущий стажировок и корпоративного обучения по " +
-                "Java Web и Enterprise технологиям");
+    private static List<Organization> randomOrganization(int count) {
+        List<Organization> organizations = new ArrayList<>();
+        for (int j = 0; j < count; j++) {
+            List<Period> periods = new ArrayList<>();
+            for (int i = 0; i < 3; i++) {
+                LocalDate startDate = LocalDate.of(2000 + i, i, 1);
+                LocalDate endDate = LocalDate.of(2001 + i, i, 1);
+                Period period = new Period(randomWord(5), randomSentence(3),
+                        startDate, endDate);
+                periods.add(period);
+            }
+            Link link = new Link(randomWord(7), "https://www." + randomWord(7) + ".ru");
+            Organization organization = new Organization(randomWord(6), link, periods);
+            organizations.add(organization);
+        }
+        return organizations;
+    }
 
-        EnumMap<SectionType, AbstractSection> sections = new EnumMap<>(SectionType.class);
-        EnumMap<ContactType, String> contacts = new EnumMap<>(ContactType.class);
+    private static String randomPhoneNumber() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("+7");
+        for (int i = 0; i < 10; i++) {
+            sb.append(random.nextInt());
+        }
+        return sb.toString();
+    }
 
-        String uuid = "1111";
-        String fullName = "Григорий Кислин";
+    private static String randomSentence(int wordCount) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < wordCount; i++) {
+            int wordlength = random.nextInt(7) + 2;
+            sb.append(randomWord(wordlength) + " ");
+        }
+        sb.replace(0, 1, sb.substring(0, 1).toUpperCase());
+        return sb.toString().trim() + ".";
+    }
 
-        contacts.put(ContactType.TELEPHONE, "+7(921) 855-0482");
-        contacts.put(ContactType.SKYPE, "skype:grigory.kislin");
-        contacts.put(ContactType.EMAIL, "gkislin@yandex.ru");
-        contacts.put(ContactType.LINKEDIN, "https://www.linkedin.com/in/gkislin");
-        contacts.put(ContactType.GITHUB, "https://github.com/gkislin");
-        contacts.put(ContactType.STACKOVERFLOW, "https://stackoverflow.com/users/548473");
-        contacts.put(ContactType.HOMEPAGE, "http://gkislin.ru/");
-
-        sections.put(SectionType.OBJECTIVE, objectiveSection);
-        sections.put(SectionType.PERSONAL, personalSection);
-        sections.put(SectionType.ACHIEVEMENT, achievementSection);
-        sections.put(SectionType.QUALIFICATIONS, qualificationSection);
-        sections.put(SectionType.EXPERIENCE, workSection);
-        sections.put(SectionType.EDUCATION, educationSection);
-
-        Resume testResum = new Resume(uuid, fullName, contacts, sections);
-        testResum.printResume();
+    private static String randomWord(int length) {
+        String letterts = "abcdefghijklmnopqrstuvwxyz";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(letterts.length());
+            sb.append(letterts.charAt(index));
+        }
+        return sb.toString();
     }
 }

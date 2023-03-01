@@ -1,27 +1,27 @@
 package ru.javawebinar.basejava.model;
 
 import java.util.List;
+import java.util.Objects;
 
-public class ListSection extends AbstractSection {
-    private List<String> descriptions;
+/**
+ * gkislin
+ * 14.07.2016
+ */
+public class ListSection extends Section {
+    private final List<String> items;
+
+    public ListSection(List<String> items) {
+        Objects.requireNonNull(items, "items must not be null");
+        this.items = items;
+    }
+
+    public List<String> getItems() {
+        return items;
+    }
 
     @Override
-    public void printContent() {
-        for (String description : descriptions) {
-            System.out.println("\u2022 " + description);
-        }
-    }
-
-    public List<String> getDescriptions() {
-        return descriptions;
-    }
-
-    public void setDescriptions(List<String> descriptions) {
-        this.descriptions = descriptions;
-    }
-
-    public ListSection(List<String> description) {
-        this.descriptions = description;
+    public String toString() {
+        return items.toString();
     }
 
     @Override
@@ -31,18 +31,13 @@ public class ListSection extends AbstractSection {
 
         ListSection that = (ListSection) o;
 
-        return descriptions.equals(that.descriptions);
+        return items.equals(that.items);
+
     }
 
     @Override
     public int hashCode() {
-        return descriptions.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "ListSection{" +
-                "description=" + descriptions +
-                '}';
+        return items.hashCode();
     }
 }
+
