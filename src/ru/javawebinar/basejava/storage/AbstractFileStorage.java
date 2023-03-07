@@ -14,7 +14,7 @@ import java.util.Objects;
  * 22.07.2016
  */
 public abstract class AbstractFileStorage extends AbstractStorage<File> {
-    private File directory;
+    private final File directory;
 
     protected AbstractFileStorage(File directory) {
         Objects.requireNonNull(directory, "directory must not be null");
@@ -32,15 +32,21 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         File[] files = directory.listFiles();
         if (files != null) {
             for (File file : files) {
-                file.delete();
+                doDelete(file);
             }
+        } else {
+            throw new StorageException("FileStorage clear error", directory.getPath());
         }
     }
 
     @Override
     public int size() {
         File[] files = directory.listFiles();
-        return files.length;
+        if (files != null) {
+            return files.length;
+        } else {
+            throw new StorageException("FileStorage size error", directory.getPath());
+        }
     }
 
     @Override
@@ -74,37 +80,34 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     protected abstract void doWrite(Resume r, File file) throws IOException;
 
-    protected abstract Resume doReade(File file) throws IOException;
+    protected abstract Resume doRead(File file) throws IOException;
 
     @Override
     protected Resume doGet(File file) {
-        File[] files = directory.listFiles();
-        if (files != null) {
-            for (File f : files) {
-                if (f.getName().equals(file.getName())) {
-                    try {
-                        return doReade(file);
-                    } catch (IOException e) {
-                        throw new StorageException("IO error", file.getName(), e);
-                    }
-                }
-            }
+        try {
+            return doRead(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     @Override
     protected void doDelete(File file) {
-        file.delete();
+        if (!file.delete()) {
+            throw new StorageException("FileStorage delete error", file.getName());
+        }
     }
 
     @Override
     protected List<Resume> doCopyAll() {
         List<Resume> resumes = new ArrayList<>();
         File[] files = directory.listFiles();
+        if (files == null) {
+            throw new StorageException("FileStorage copy all error", directory.getPath());
+        }
         for (File file : files) {
             try {
-                resumes.add(doReade(file));
+                resumes.add(doRead(file));
             } catch (IOException e) {
                 throw new StorageException("IO error", file.getName(), e);
             }
