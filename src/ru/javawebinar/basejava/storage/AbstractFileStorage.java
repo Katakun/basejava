@@ -30,22 +30,22 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     @Override
     public void clear() {
         File[] files = directory.listFiles();
-        if (files != null) {
+        if (files == null) {
+            throw new StorageException("FileStorage clear error", directory.getPath());
+        } else {
             for (File file : files) {
                 doDelete(file);
             }
-        } else {
-            throw new StorageException("FileStorage clear error", directory.getPath());
         }
     }
 
     @Override
     public int size() {
         File[] files = directory.listFiles();
-        if (files != null) {
-            return files.length;
-        } else {
+        if (files == null) {
             throw new StorageException("FileStorage size error", directory.getPath());
+        } else {
+            return files.length;
         }
     }
 
@@ -78,9 +78,6 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         }
     }
 
-    protected abstract void doWrite(Resume r, File file) throws IOException;
-
-    protected abstract Resume doRead(File file) throws IOException;
 
     @Override
     protected Resume doGet(File file) {
@@ -114,4 +111,8 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         }
         return resumes;
     }
+
+    protected abstract void doWrite(Resume r, File file) throws IOException;
+
+    protected abstract Resume doRead(File file) throws IOException;
 }
