@@ -16,13 +16,9 @@ public class PathStorage extends AbstractStorage<Path> {
     private final Path directory;
     private final ObjectSaveStrategy objectSaveStrategy;
 
-//    public void setObjectSaveStrategy(ObjectSaveStrategy objectSaveStrategy) {
-//        this.objectSaveStrategy = objectSaveStrategy;
-//    }
-
     protected void doWrite(Resume r, OutputStream os) throws IOException {
         objectSaveStrategy.doWrite(r, os);
-    };
+    }
 
     protected Resume doRead(InputStream is) throws IOException {
         return objectSaveStrategy.doRead(is);

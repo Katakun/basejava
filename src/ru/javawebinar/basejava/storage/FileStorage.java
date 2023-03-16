@@ -16,10 +16,6 @@ public class FileStorage extends AbstractStorage<File> {
     private final File directory;
     private final ObjectSaveStrategy objectSaveStrategy;
 
-//    public void setObjectSaveStrategy(ObjectSaveStrategy objectSaveStrategy) {
-//        this.objectSaveStrategy = objectSaveStrategy;
-//    }
-
     protected void doWrite(Resume r, OutputStream os) throws IOException {
         objectSaveStrategy.doWrite(r, os);
     }
