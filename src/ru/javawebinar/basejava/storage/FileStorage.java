@@ -12,14 +12,23 @@ import java.util.Objects;
  * gkislin
  * 22.07.2016
  */
-public abstract class AbstractFileStorage extends AbstractStorage<File> {
-    private File directory;
+public class FileStorage extends AbstractStorage<File> {
+    private final File directory;
+    private final ObjectSaveStrategy objectSaveStrategy;
 
-    protected abstract void doWrite(Resume r, OutputStream os) throws IOException;
+//    public void setObjectSaveStrategy(ObjectSaveStrategy objectSaveStrategy) {
+//        this.objectSaveStrategy = objectSaveStrategy;
+//    }
 
-    protected abstract Resume doRead(InputStream is) throws IOException;
+    protected void doWrite(Resume r, OutputStream os) throws IOException {
+        objectSaveStrategy.doWrite(r, os);
+    }
 
-    protected AbstractFileStorage(File directory) {
+    protected Resume doRead(InputStream is) throws IOException {
+        return objectSaveStrategy.doRead(is);
+    }
+
+    protected FileStorage(File directory, ObjectSaveStrategy oss) {
         Objects.requireNonNull(directory, "directory must not be null");
         if (!directory.isDirectory()) {
             throw new IllegalArgumentException(directory.getAbsolutePath() + " is not directory");
@@ -28,6 +37,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
             throw new IllegalArgumentException(directory.getAbsolutePath() + " is not readable/writable");
         }
         this.directory = directory;
+        this.objectSaveStrategy = oss;
     }
 
     @Override

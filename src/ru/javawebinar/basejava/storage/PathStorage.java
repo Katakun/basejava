@@ -12,19 +12,29 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public abstract class AbstractPathStorage extends AbstractStorage<Path> {
-    private Path directory;
+public class PathStorage extends AbstractStorage<Path> {
+    private final Path directory;
+    private final ObjectSaveStrategy objectSaveStrategy;
 
-    protected abstract void doWrite(Resume r, OutputStream os) throws IOException;
+//    public void setObjectSaveStrategy(ObjectSaveStrategy objectSaveStrategy) {
+//        this.objectSaveStrategy = objectSaveStrategy;
+//    }
 
-    protected abstract Resume doRead(InputStream is) throws IOException;
+    protected void doWrite(Resume r, OutputStream os) throws IOException {
+        objectSaveStrategy.doWrite(r, os);
+    };
 
-    protected AbstractPathStorage(String dir) {
+    protected Resume doRead(InputStream is) throws IOException {
+        return objectSaveStrategy.doRead(is);
+    }
+
+    protected PathStorage(String dir, ObjectSaveStrategy oss) {
         Objects.requireNonNull(dir, "directory must not be null");
         if (!Files.isDirectory(Paths.get(dir)) || !Files.isWritable(Paths.get(dir))) {
             throw new IllegalArgumentException(dir + " is not directory or is not writable");
         }
         directory = Paths.get(dir);
+        this.objectSaveStrategy = oss;
     }
 
     @Override
