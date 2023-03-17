@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 public class PathStorage extends AbstractStorage<Path> {
     private final Path directory;
-f    private final StrategySerializer strategySerializer;
+    private final StrategySerializer strategySerializer;
 
     protected void doWrite(Resume r, OutputStream os) throws IOException {
         strategySerializer.doWrite(r, os);
