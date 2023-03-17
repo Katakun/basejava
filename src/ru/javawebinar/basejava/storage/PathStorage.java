@@ -2,35 +2,36 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.storage.strategy.StrategySerializer;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PathStorage extends AbstractStorage<Path> {
     private final Path directory;
-    private final ObjectSaveStrategy objectSaveStrategy;
+f    private final StrategySerializer strategySerializer;
 
     protected void doWrite(Resume r, OutputStream os) throws IOException {
-        objectSaveStrategy.doWrite(r, os);
+        strategySerializer.doWrite(r, os);
     }
 
     protected Resume doRead(InputStream is) throws IOException {
-        return objectSaveStrategy.doRead(is);
+        return strategySerializer.doRead(is);
     }
 
-    protected PathStorage(String dir, ObjectSaveStrategy oss) {
+    protected PathStorage(String dir, StrategySerializer oss) {
         Objects.requireNonNull(dir, "directory must not be null");
         if (!Files.isDirectory(Paths.get(dir)) || !Files.isWritable(Paths.get(dir))) {
             throw new IllegalArgumentException(dir + " is not directory or is not writable");
         }
         directory = Paths.get(dir);
-        this.objectSaveStrategy = oss;
+        this.strategySerializer = oss;
     }
 
     @Override
@@ -75,8 +76,7 @@ public class PathStorage extends AbstractStorage<Path> {
         try {
             path.toFile();
         } catch (Exception e) {
-            throw new StorageException("Couldn't create Path " +
-                    path.getFileName().toString(), path.toFile().toString(), e);
+            throw new StorageException("Couldn't create Path " + path.getFileName().toString(), path.toFile().toString(), e);
         }
         doUpdate(r, path);
     }
@@ -101,14 +101,10 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     protected List<Resume> doCopyAll() {
-        List<Resume> resumes = new ArrayList<>();
-        try {
-            Stream<Path> pathStream = Files.list(directory);
-            pathStream.forEach(path -> resumes.add(doGet(path)));
+        try (Stream<Path> pathStream = Files.list(directory)) {
+            return pathStream.map(this::doGet).collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        return resumes;
     }
 }
