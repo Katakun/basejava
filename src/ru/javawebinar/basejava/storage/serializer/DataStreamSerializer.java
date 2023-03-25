@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.storage.serializer;
 
+import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.*;
 
 import java.io.*;
@@ -27,17 +28,14 @@ public class DataStreamSerializer implements StreamSerializer {
             Map<SectionType, Section> sections = r.getSections();
             dos.writeInt(sections.size());
             for (Map.Entry<SectionType, Section> entry : sections.entrySet()) {
+                dos.writeUTF(entry.getKey().name());
                 switch (entry.getKey().name()) {
-                    // TextSection
                     case "OBJECTIVE":
                     case "PERSONAL":
-                        dos.writeUTF(entry.getKey().name());
                         dos.writeUTF(entry.getValue().toString());
                         break;
-                    // ListSection
                     case "ACHIEVEMENT":
                     case "QUALIFICATIONS":
-                        dos.writeUTF(entry.getKey().name());
                         ListSection listSection = (ListSection) entry.getValue();
                         List<String> listStrings = listSection.getItems();
                         dos.writeInt(listStrings.size());
@@ -45,10 +43,8 @@ public class DataStreamSerializer implements StreamSerializer {
                             dos.writeUTF(s);
                         }
                         break;
-                    // OrganizationsSection
                     case "EXPERIENCE":
                     case "EDUCATION":
-                        dos.writeUTF(entry.getKey().name());
                         OrganizationSection organizationSection = (OrganizationSection) entry.getValue();
                         List<Organization> listOrganizations = organizationSection.getOrganizations();
                         dos.writeInt(listOrganizations.size());
@@ -77,6 +73,8 @@ public class DataStreamSerializer implements StreamSerializer {
                         break;
                 }
             }
+        } catch (IOException e) {
+            throw new StorageException("DataOutputStream error", r.getUuid(), e);
         }
     }
 
@@ -97,12 +95,10 @@ public class DataStreamSerializer implements StreamSerializer {
             for (int i = 0; i < sectionSize; i++) {
                 SectionType sectionType = SectionType.valueOf(dis.readUTF());
                 switch (sectionType) {
-                    // TextSection
                     case OBJECTIVE:
                     case PERSONAL:
                         resume.addSection(sectionType, new TextSection(dis.readUTF()));
                         break;
-                    // ListSection
                     case ACHIEVEMENT:
                     case QUALIFICATIONS:
                         int listSize = dis.readInt();
@@ -112,31 +108,22 @@ public class DataStreamSerializer implements StreamSerializer {
                         }
                         resume.addSection(sectionType, new ListSection(items));
                         break;
-                    // OrganizationSection
                     case EXPERIENCE:
                     case EDUCATION:
                         List<Organization> organizationList = new ArrayList<>();
                         int orgSize = dis.readInt();
                         for (int j = 0; j < orgSize; j++) {
                             String name = dis.readUTF();
-                            Link link;
-                            String url = null;
-                            if (dis.readBoolean()) {
-                                url = dis.readUTF();
-                            }
-                            link = new Link(name, url);
+                            String url = dis.readBoolean() ? dis.readUTF() : null;
+                            Link link = new Link(name, url);
                             int posSize = dis.readInt();
                             List<Organization.Position> positions = new ArrayList<>();
                             for (int k = 0; k < posSize; k++) {
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//                                formatter = formatter.withLocale(Locale.US);
                                 LocalDate start = LocalDate.parse(dis.readUTF(), formatter);
                                 LocalDate end = LocalDate.parse(dis.readUTF(), formatter);
                                 String title = dis.readUTF();
-                                String description = null;
-                                if (dis.readBoolean()) {
-                                    description = dis.readUTF();
-                                }
+                                String description = dis.readBoolean() ? dis.readUTF() : null;
                                 positions.add(new Organization.Position(start, end, title, description));
                             }
                             organizationList.add(new Organization(link, positions));
@@ -146,6 +133,8 @@ public class DataStreamSerializer implements StreamSerializer {
                 }
             }
             return resume;
+        } catch (IOException e) {
+            throw new StorageException("DataInputStream error", e);
         }
     }
 }
