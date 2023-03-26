@@ -12,6 +12,7 @@ import java.util.Map;
 
 
 public class DataStreamSerializer implements StreamSerializer {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Override
     public void doWrite(Resume r, OutputStream os) throws IOException {
@@ -28,11 +29,12 @@ public class DataStreamSerializer implements StreamSerializer {
             Map<SectionType, Section> sections = r.getSections();
             dos.writeInt(sections.size());
             for (Map.Entry<SectionType, Section> entry : sections.entrySet()) {
-                dos.writeUTF(entry.getKey().name());
-                switch (entry.getKey().name()) {
+                String sectionTypeName = entry.getKey().name();
+                dos.writeUTF(sectionTypeName);
+                switch (sectionTypeName) {
                     case "OBJECTIVE":
                     case "PERSONAL":
-                        dos.writeUTF(entry.getValue().toString());
+                        dos.writeUTF(((TextSection) entry.getValue()).getContent());
                         break;
                     case "ACHIEVEMENT":
                     case "QUALIFICATIONS":
@@ -59,8 +61,8 @@ public class DataStreamSerializer implements StreamSerializer {
                             List<Organization.Position> listPos = org.getPositions();
                             dos.writeInt(listPos.size());
                             for (Organization.Position p : listPos) {
-                                dos.writeUTF(String.valueOf(p.getStartDate()));
-                                dos.writeUTF(String.valueOf(p.getEndDate()));
+                                dos.writeUTF(p.getStartDate().format(formatter));
+                                dos.writeUTF(p.getEndDate().format(formatter));
                                 dos.writeUTF(p.getTitle());
                                 if (p.getDescription() != null) {
                                     dos.writeBoolean(true);
@@ -119,7 +121,6 @@ public class DataStreamSerializer implements StreamSerializer {
                             int posSize = dis.readInt();
                             List<Organization.Position> positions = new ArrayList<>();
                             for (int k = 0; k < posSize; k++) {
-                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                                 LocalDate start = LocalDate.parse(dis.readUTF(), formatter);
                                 LocalDate end = LocalDate.parse(dis.readUTF(), formatter);
                                 String title = dis.readUTF();
