@@ -9,19 +9,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class DataStreamSerializer implements StreamSerializer {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @FunctionalInterface
     public interface DosWriter<T> {
         void write(T t) throws IOException;
     }
 
-    private void writeWithException(Collection c, DataOutputStream dos, DosWriter writer) throws IOException {
-        dos.writeInt(c.size());
-        Objects.requireNonNull(writer);
-        for (Object o : c) {
-            writer.write(o);
-        }
+    public interface DosReader {
+        void read() throws IOException;
     }
 
     @Override
@@ -67,8 +63,8 @@ public class DataStreamSerializer implements StreamSerializer {
                             }
                             writeWithException(org.getPositions(), dos, p -> {
                                 Organization.Position position = (Organization.Position) p;
-                                dos.writeUTF(position.getStartDate().format(formatter));
-                                dos.writeUTF(position.getEndDate().format(formatter));
+                                dos.writeUTF(position.getStartDate().format(FORMATTER));
+                                dos.writeUTF(position.getEndDate().format(FORMATTER));
                                 dos.writeUTF(position.getTitle());
                                 if (position.getDescription() != null) {
                                     dos.writeBoolean(true);
@@ -91,15 +87,14 @@ public class DataStreamSerializer implements StreamSerializer {
             String uuid = dis.readUTF();
             String fullName = dis.readUTF();
             Resume resume = new Resume(uuid, fullName);
-            int contactSize = dis.readInt();
-            for (int i = 0; i < contactSize; i++) {
-                ContactType type = ContactType.valueOf(dis.readUTF());
+            readWithException(dis, resume,() -> {
+                ContactType contactType = ContactType.valueOf(dis.readUTF());
                 String contact = dis.readUTF();
-                resume.addContact(type, contact);
-            }
+                resume.addContact(contactType, contact);
+            });
+
             // TODO implements sections
-            int sectionSize = dis.readInt();
-            for (int i = 0; i < sectionSize; i++) {
+            readWithException(dis,resume, () -> {
                 SectionType sectionType = SectionType.valueOf(dis.readUTF());
                 switch (sectionType) {
                     case OBJECTIVE:
@@ -108,39 +103,49 @@ public class DataStreamSerializer implements StreamSerializer {
                         break;
                     case ACHIEVEMENT:
                     case QUALIFICATIONS:
-                        int listSize = dis.readInt();
                         List<String> items = new ArrayList<>();
-                        for (int j = 0; j < listSize; j++) {
+                        readWithException(dis,resume, () -> {
                             items.add(dis.readUTF());
-                        }
+                        });
                         resume.addSection(sectionType, new ListSection(items));
                         break;
                     case EXPERIENCE:
                     case EDUCATION:
                         List<Organization> organizationList = new ArrayList<>();
-                        int orgSize = dis.readInt();
-                        for (int j = 0; j < orgSize; j++) {
+                        readWithException(dis, resume, () -> {
                             String name = dis.readUTF();
                             String url = dis.readBoolean() ? dis.readUTF() : null;
                             Link link = new Link(name, url);
-                            int posSize = dis.readInt();
                             List<Organization.Position> positions = new ArrayList<>();
-                            for (int k = 0; k < posSize; k++) {
-                                LocalDate start = LocalDate.parse(dis.readUTF(), formatter);
-                                LocalDate end = LocalDate.parse(dis.readUTF(), formatter);
+                            readWithException(dis, resume, () -> {
+                                LocalDate start = LocalDate.parse(dis.readUTF(), FORMATTER);
+                                LocalDate end = LocalDate.parse(dis.readUTF(), FORMATTER);
                                 String title = dis.readUTF();
                                 String description = dis.readBoolean() ? dis.readUTF() : null;
                                 positions.add(new Organization.Position(start, end, title, description));
-                            }
+                            });
                             organizationList.add(new Organization(link, positions));
-                        }
+                        });
                         resume.addSection(sectionType, new OrganizationSection(organizationList));
-                        break;
                 }
-            }
-            return resume;
-        } catch (IOException e) {
-            throw new StorageException("DataInputStream error", e);
+            });
+        return resume;
+        }
+
+    }
+
+    private <T> void writeWithException(Collection<T> c, DataOutputStream dos, DosWriter writer) throws IOException {
+        dos.writeInt(c.size());
+        Objects.requireNonNull(writer);
+        for (T t : c) {
+            writer.write(t);
+        }
+    }
+
+    private void readWithException(DataInputStream dis, Resume resume, DosReader reader) throws IOException {
+        int size = dis.readInt();
+        for (int i = 0; i < size; i++) {
+            reader.read();
         }
     }
 }
