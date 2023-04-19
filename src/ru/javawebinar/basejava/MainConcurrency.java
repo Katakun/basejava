@@ -80,14 +80,14 @@ public class MainConcurrency {
         Thread threadLock2 = new Thread(() -> {
             System.out.println(Thread.currentThread().getName() + " start");
             synchronized (LOCK2) {
-                System.out.println(Thread.currentThread().getName() + " get LOCK1");
+                System.out.println(Thread.currentThread().getName() + " get LOCK2");
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
                 synchronized (LOCK1) {
-                    System.out.println(Thread.currentThread().getName() + " get LOCK2");
+                    System.out.println(Thread.currentThread().getName() + " get LOCK1");
                     System.out.println();
                 }
             }
