@@ -60,42 +60,28 @@ public class MainConcurrency {
         });
         System.out.println(mainConcurrency.counter);
 
-        Thread threadLock1 = new Thread(() -> {
+        threadLocker(LOCK1, LOCK2);
+        threadLocker(LOCK2, LOCK1);
+    }
+
+    private static void threadLocker (Object object1, Object object2) {
+        Runnable runnable = () -> {
             System.out.println(Thread.currentThread().getName() + " start");
-            synchronized (LOCK1) {
-                System.out.println(Thread.currentThread().getName() + " get LOCK1");
+            synchronized (object1) {
+                System.out.println(Thread.currentThread().getName() + " sync " + object1);
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                synchronized (LOCK2) {
-                    System.out.println(Thread.currentThread().getName() + " get LOCK2");
-                    System.out.println();
+                synchronized (object2) {
+                    System.out.println(Thread.currentThread().getName() + " sync " + object2);
                 }
             }
             System.out.println(Thread.currentThread().getName() + " stop");
-        }, "threadForLock1");
-
-        Thread threadLock2 = new Thread(() -> {
-            System.out.println(Thread.currentThread().getName() + " start");
-            synchronized (LOCK2) {
-                System.out.println(Thread.currentThread().getName() + " get LOCK2");
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                synchronized (LOCK1) {
-                    System.out.println(Thread.currentThread().getName() + " get LOCK1");
-                    System.out.println();
-                }
-            }
-            System.out.println(Thread.currentThread().getName() + " stop");
-        }, "threadForLock2");
-
-        threadLock1.start();
-        threadLock2.start();
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
     }
 
     private synchronized void inc() {
