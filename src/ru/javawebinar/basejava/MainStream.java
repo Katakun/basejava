@@ -3,8 +3,7 @@ package ru.javawebinar.basejava;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import static java.util.stream.Collectors.groupingBy;
+import java.util.stream.Collectors;
 
 public class MainStream {
     public static void main(String[] args) {
@@ -14,20 +13,17 @@ public class MainStream {
     }
 
     static int minValue(Integer[] values) {
-        int res = Arrays.stream(values)
+        return Arrays.stream(values)
                 .sorted()
                 .distinct()
                 .reduce(0, (a, b) -> a * 10 + b);
-        return res;
     }
 
     static List<Integer> oddOrEven(List<Integer> integers) {
-        Map<String, List<Integer>> oddAndEven = integers.stream()
-                .collect(groupingBy(i -> {
-                    if (i % 2 == 0) return "even";
-                    else return "odd";
-                }));
-        return oddAndEven.get("odd").size() % 2 == 0 ?
-                oddAndEven.get("odd") : oddAndEven.get("even");
+        Map<Boolean, List<Integer>> oddAndEven = integers.stream()
+                .collect(Collectors.partitioningBy(i -> i % 2 == 0));
+
+        return oddAndEven.get(false).size() % 2 == 0 ?
+                oddAndEven.get(false) : oddAndEven.get(true);
     }
 }
