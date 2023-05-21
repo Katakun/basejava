@@ -3,19 +3,24 @@ package ru.javawebinar.basejava.sql;
 import ru.javawebinar.basejava.exception.StorageException;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class SqlHelper {
     private final ConnectionFactory connectionFactory;
-    private final String sql;
 
-    public SqlHelper(ConnectionFactory connectionFactory, String sql) {
-        this.connectionFactory = connectionFactory;
-        this.sql = sql;
+    public SqlHelper(String dbUrl, String dbUser, String dbPassword) {
+        this.connectionFactory = new ConnectionFactory() {
+            @Override
+            public Connection getConnection() throws SQLException {
+                return DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+            }
+        };
+
     }
 
-    public void execute(ABlockOfCode aBlockOfCode) {
+    public void execute(String sql, ABlockOfCode aBlockOfCode) {
         try (Connection conn = connectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             aBlockOfCode.someCode(ps);
