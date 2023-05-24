@@ -20,10 +20,10 @@ public class SqlHelper {
 
     }
 
-    public void execute(String sql, ABlockOfCode aBlockOfCode) {
+    public <T> T execute(String sql, ABlockOfCode<T> aBlockOfCode) {
         try (Connection conn = connectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            aBlockOfCode.someCode(ps);
+             return aBlockOfCode.someCode(ps);
         } catch (SQLException e) {
             throw new StorageException(e);
         }

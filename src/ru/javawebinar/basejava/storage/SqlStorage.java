@@ -2,6 +2,7 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
+import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.sql.SqlHelper;
 
@@ -10,7 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SqlStorage implements Storage {
+public class SqlStorage<t> implements Storage {
     private final SqlHelper sqlHelper;
 
     public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
@@ -21,21 +22,20 @@ public class SqlStorage implements Storage {
     public void clear() {
         sqlHelper.execute("DELETE FROM resume", (preparedStatement) -> {
             preparedStatement.execute();
+            return null;
         });
     }
 
     @Override
     public Resume get(String uuid) {
-        Resume[] resultResume = new Resume[1];
-        sqlHelper.execute("SELECT * FROM resume r WHERE r.uuid =?", preparedStatement -> {
+        return sqlHelper.execute("SELECT * FROM resume r WHERE r.uuid =?", preparedStatement -> {
             preparedStatement.setString(1, uuid);
             ResultSet rs = preparedStatement.executeQuery();
             if (!rs.next()) {
                 throw new NotExistStorageException(uuid);
             }
-            resultResume[0] = new Resume(uuid, rs.getString("full_name"));
+            return new Resume(uuid, rs.getString("full_name"));
         });
-        return resultResume[0];
     }
 
     @Override
@@ -43,7 +43,10 @@ public class SqlStorage implements Storage {
         sqlHelper.execute("UPDATE resume SET full_name=? WHERE uuid=?", preparedStatement -> {
             preparedStatement.setString(1, r.getFullName());
             preparedStatement.setString(2, r.getUuid());
-            preparedStatement.execute();
+            if (preparedStatement.executeUpdate() == 0) {
+                throw new NotExistStorageException(r.getUuid());
+            }
+            return null;
         });
     }
 
@@ -55,39 +58,41 @@ public class SqlStorage implements Storage {
             try {
                 preparedStatement.execute();
             } catch (SQLException e) {
-                throw new ExistStorageException(r.getUuid());
+                if ("23505".equals(e.getSQLState())) {
+                    throw new ExistStorageException(r.getUuid());
+                }
+                throw new StorageException(e);
             }
+            return null;
         });
     }
 
     public void delete(String uuid) {
         sqlHelper.execute("DELETE FROM resume WHERE uuid=?", preparedStatement -> {
             preparedStatement.setString(1, uuid);
-            if (!preparedStatement.execute()) {
+            if (preparedStatement.executeUpdate() == 0) {
                 throw new NotExistStorageException(uuid);
             }
+            return null;
         });
     }
 
     public List<Resume> getAllSorted() {
-        List<Resume> resumes = new ArrayList<>();
-        sqlHelper.execute("SELECT * FROM resume ORDER BY uuid", preparedStatement -> {
+        return sqlHelper.execute("SELECT * FROM resume ORDER BY full_name", preparedStatement -> {
+            List<Resume> resumes = new ArrayList<>();
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                resumes.add(new Resume(rs.getString("uuid").trim(), rs.getString("full_name")));
+                resumes.add(new Resume(rs.getString("uuid"), rs.getString("full_name")));
             }
-
+            return resumes;
         });
-        return resumes;
     }
 
     public int size() {
-        final int[] size = new int[1];
-        sqlHelper.execute("SELECT count(*) FROM resume", preparedStatement -> {
+        return sqlHelper.execute("SELECT count(*) FROM resume", preparedStatement -> {
             ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
-            size[0] = resultSet.getInt(1);
+            return resultSet.getInt(1);
         });
-        return size[0];
     }
 }

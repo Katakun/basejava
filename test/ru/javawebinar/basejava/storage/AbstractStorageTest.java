@@ -10,6 +10,7 @@ import ru.javawebinar.basejava.model.Resume;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -19,10 +20,10 @@ public abstract class AbstractStorageTest {
 
     protected Storage storage;
 
-    private static final String UUID_1 = "uuid1";
-    private static final String UUID_2 = "uuid2";
-    private static final String UUID_3 = "uuid3";
-    private static final String UUID_4 = "uuid4";
+    private static final String UUID_1 = String.valueOf(UUID.randomUUID());
+    private static final String UUID_2 = String.valueOf(UUID.randomUUID());
+    private static final String UUID_3 = String.valueOf(UUID.randomUUID());
+    private static final String UUID_4 = String.valueOf(UUID.randomUUID());
 
     private static final Resume R1;
     private static final Resume R2;
@@ -92,7 +93,9 @@ public abstract class AbstractStorageTest {
 
     @Test(expected = NotExistStorageException.class)
     public void updateNotExist() throws Exception {
-        storage.get("dummy");
+        Resume newResume = new Resume("9999", "Not Exist");
+        storage.update(newResume);
+//        storage.get("dummy");
     }
 
     @Test
