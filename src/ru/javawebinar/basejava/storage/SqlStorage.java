@@ -8,9 +8,7 @@ import ru.javawebinar.basejava.sql.SqlHelper;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SqlStorage implements Storage {
     public final SqlHelper sqlHelper;
@@ -24,6 +22,7 @@ public class SqlStorage implements Storage {
         sqlHelper.execute("DELETE FROM resume");
     }
 
+    // можно не делать транзакцию, так как один запрос
     @Override
     public Resume get(String uuid) {
         return sqlHelper.execute("" +
@@ -50,19 +49,46 @@ public class SqlStorage implements Storage {
 
     @Override
     public void update(Resume r) {
-        sqlHelper.execute("UPDATE resume SET full_name = ? WHERE uuid = ?", ps -> {
-            ps.setString(1, r.getFullName());
-            ps.setString(2, r.getUuid());
-            if (ps.executeUpdate() == 0) {
-                throw new NotExistStorageException(r.getUuid());
+        sqlHelper.transactionalExecute(conn -> {
+            try (PreparedStatement ps = conn.prepareStatement("" +
+                    "UPDATE resume " +
+                    "SET " +
+                    "   full_name = ? " +
+                    "WHERE " +
+                    "   uuid = ?")) {
+                ps.setString(1, r.getUuid());
+                ps.setString(2, r.getFullName());
+                if (ps.executeUpdate() == 0) {
+                    throw new NotExistStorageException(r.getUuid());
+                }
+            }
+            try (PreparedStatement ps = conn.prepareStatement("" +
+                    "UPDATE contact " +
+                    "SET " +
+                    "   resume_uuid = ?, " +
+                    "   type = ?," +
+                    "   value = ?" +
+                    "WHERE " +
+                    "   resume_uuid = ?")) {
+
             }
             return null;
         });
+
+//        sqlHelper.execute("UPDATE resume SET full_name = ? WHERE uuid = ?", ps -> {
+//            ps.setString(1, r.getFullName());
+//            ps.setString(2, r.getUuid());
+//            if (ps.executeUpdate() == 0) {
+//                throw new NotExistStorageException(r.getUuid());
+//            }
+//            return null;
+//        });
     }
 
     @Override
     public void save(Resume r) {
         sqlHelper.transactionalExecute(conn -> {
+                    // в try так как надо закрывать conn, try with resources
                     try (PreparedStatement ps = conn.prepareStatement("INSERT INTO resume (uuid, full_name) VALUES (?,?)")) {
                         ps.setString(1, r.getUuid());
                         ps.setString(2, r.getFullName());
@@ -82,6 +108,7 @@ public class SqlStorage implements Storage {
         );
     }
 
+    // можно не делать транзакцию, один запрос
     @Override
     public void delete(String uuid) {
         sqlHelper.execute("DELETE FROM resume WHERE uuid=?", ps -> {
@@ -95,13 +122,31 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
-        return sqlHelper.execute("SELECT * FROM resume r ORDER BY full_name,uuid", ps -> {
+        return sqlHelper.execute("" +
+                "    SELECT * FROM resume r " +
+                " LEFT JOIN contact c" +
+                "        ON r.uuid = c.resume_uuid " +
+                "  ORDER BY full_name, uuid", ps -> {
+
             ResultSet rs = ps.executeQuery();
-            List<Resume> resumes = new ArrayList<>();
+            Map<String, Resume> resumeMap = new LinkedHashMap<>();
             while (rs.next()) {
-                resumes.add(new Resume(rs.getString("uuid"), rs.getString("full_name")));
+
+                String uuid = rs.getString("uuid");
+                Resume resume = resumeMap.get(uuid);
+
+                if (resume == null){
+                    resume = new Resume(uuid, rs.getString("full_name"));
+                }
+
+                if (rs.getString("type") != null) {
+                    ContactType contactType = ContactType.valueOf(rs.getString("type"));
+                    String contactValue = rs.getString("value");
+                    resume.addContact(contactType, contactValue);
+                }
+                resumeMap.putIfAbsent(uuid, resume);
             }
-            return resumes;
+            return new ArrayList<>(resumeMap.values());
         });
     }
 
