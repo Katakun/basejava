@@ -29,7 +29,7 @@ public class SqlStorage implements Storage {
                         "    SELECT * FROM resume r " +
                         " LEFT JOIN contact c " +
                         "        ON r.uuid = c.resume_uuid " +
-                        "     WHERE r.uuid =? ",
+                        "     WHERE r.uuid = ? ",
                 ps -> {
                     ps.setString(1, uuid);
                     ResultSet rs = ps.executeQuery();
@@ -38,9 +38,12 @@ public class SqlStorage implements Storage {
                     }
                     Resume r = new Resume(uuid, rs.getString("full_name"));
                     do {
-                        String value = rs.getString("value");
-                        ContactType type = ContactType.valueOf(rs.getString("type"));
-                        r.addContact(type, value);
+                        String type = rs.getString("type");
+                        if (type != null) {
+                            String value = rs.getString("value");
+                            ContactType contactType = ContactType.valueOf(type);
+                            r.addContact(contactType, value);
+                        }
                     } while (rs.next());
 
                     return r;
@@ -52,25 +55,26 @@ public class SqlStorage implements Storage {
         sqlHelper.transactionalExecute(conn -> {
             try (PreparedStatement ps = conn.prepareStatement("" +
                     "UPDATE resume " +
-                    "SET " +
-                    "   full_name = ? " +
-                    "WHERE " +
-                    "   uuid = ?")) {
-                ps.setString(1, r.getUuid());
-                ps.setString(2, r.getFullName());
+                    "   SET full_name = ? " +
+                    " WHERE uuid = ?")) {
+                ps.setString(1, r.getFullName());
+                ps.setString(2, r.getUuid());
                 if (ps.executeUpdate() == 0) {
                     throw new NotExistStorageException(r.getUuid());
                 }
             }
             try (PreparedStatement ps = conn.prepareStatement("" +
                     "UPDATE contact " +
-                    "SET " +
-                    "   resume_uuid = ?, " +
-                    "   type = ?," +
-                    "   value = ?" +
-                    "WHERE " +
-                    "   resume_uuid = ?")) {
-
+                    "   SET resume_uuid = ?, type = ?, value = ?" +
+                    " WHERE resume_uuid = ?")) {
+                for (Map.Entry<ContactType, String> e : r.getContacts().entrySet()) {
+                    ps.setString(1, r.getUuid());
+                    ps.setString(2, e.getKey().name());
+                    ps.setString(1, e.getValue());
+                    ps.setString(1, r.getUuid());
+                    ps.addBatch();
+                }
+                ps.executeBatch();
             }
             return null;
         });
@@ -88,13 +92,16 @@ public class SqlStorage implements Storage {
     @Override
     public void save(Resume r) {
         sqlHelper.transactionalExecute(conn -> {
-                    // в try так как надо закрывать conn, try with resources
-                    try (PreparedStatement ps = conn.prepareStatement("INSERT INTO resume (uuid, full_name) VALUES (?,?)")) {
+                    try (PreparedStatement ps = conn.prepareStatement("" +
+                            "INSERT INTO resume (uuid, full_name) " +
+                            "     VALUES (?,?)")) {
                         ps.setString(1, r.getUuid());
                         ps.setString(2, r.getFullName());
                         ps.execute();
                     }
-                    try (PreparedStatement ps = conn.prepareStatement("INSERT INTO contact (resume_uuid, type, value) VALUES (?,?,?)")) {
+                    try (PreparedStatement ps = conn.prepareStatement("" +
+                            "INSERT INTO contact (resume_uuid, type, value) " +
+                            "     VALUES (?,?,?)")) {
                         for (Map.Entry<ContactType, String> e : r.getContacts().entrySet()) {
                             ps.setString(1, r.getUuid());
                             ps.setString(2, e.getKey().name());
@@ -135,7 +142,7 @@ public class SqlStorage implements Storage {
                 String uuid = rs.getString("uuid");
                 Resume resume = resumeMap.get(uuid);
 
-                if (resume == null){
+                if (resume == null) {
                     resume = new Resume(uuid, rs.getString("full_name"));
                 }
 
