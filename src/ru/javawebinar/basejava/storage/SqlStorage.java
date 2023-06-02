@@ -26,27 +26,18 @@ public class SqlStorage implements Storage {
     @Override
     public Resume get(String uuid) {
         return sqlHelper.execute("" +
-                        "    SELECT * FROM resume r " +
-                        " LEFT JOIN contact c " +
-                        "        ON r.uuid = c.resume_uuid " +
-                        "     WHERE r.uuid = ? ",
-                ps -> {
-                    ps.setString(1, uuid);
-                    ResultSet rs = ps.executeQuery();
-                    if (!rs.next()) {
-                        throw new NotExistStorageException(uuid);
-                    }
-                    Resume r = new Resume(uuid, rs.getString("full_name"));
-                    do {
-                        String type = rs.getString("type");
-                        if (type != null) {
-                            String value = rs.getString("value");
-                            ContactType contactType = ContactType.valueOf(type);
-                            r.addContact(contactType, value);
-                        }
-                    } while (rs.next());
-                    return r;
-                });
+                "    SELECT * FROM resume r " +
+                " LEFT JOIN contact c " +
+                "        ON r.uuid = c.resume_uuid " +
+                "     WHERE r.uuid = ? ", ps -> {
+            ps.setString(1, uuid);
+            ResultSet rs = ps.executeQuery();
+            Resume resume = getMapResumeFromResulSet(rs).get(uuid);
+            if (resume == null) {
+                throw new NotExistStorageException(uuid);
+            }
+            return resume;
+        });
     }
 
     @Override
@@ -62,17 +53,13 @@ public class SqlStorage implements Storage {
                             throw new NotExistStorageException(r.getUuid());
                         }
                     }
-
-                    if (r.getContacts().isEmpty()) {
-                        try (PreparedStatement ps = conn.prepareStatement("" +
-                                "DELETE FROM contact " +
-                                "WHERE resume_uuid = ?")) {
-                            ps.setString(1, r.getUuid());
-                            ps.execute();
-                        }
-                    } else {
-                        insertContacts(conn, r);
+                    try (PreparedStatement ps = conn.prepareStatement("" +
+                            "DELETE FROM contact " +
+                            "WHERE resume_uuid = ?")) {
+                        ps.setString(1, r.getUuid());
+                        ps.execute();
                     }
+                    insertContacts(conn, r);
                     return null;
                 }
         );
@@ -114,22 +101,7 @@ public class SqlStorage implements Storage {
                 "        ON r.uuid = c.resume_uuid " +
                 "  ORDER BY full_name, uuid", ps -> {
             ResultSet rs = ps.executeQuery();
-            Map<String, Resume> resumeMap = new LinkedHashMap<>();
-            while (rs.next()) {
-                String uuid = rs.getString("uuid");
-                Resume resume = resumeMap.get(uuid);
-                if (resume == null) {
-                    resume = new Resume(uuid, rs.getString("full_name"));
-                }
-                String type = rs.getString("type");
-                if (type != null) {
-                    ContactType contactType = ContactType.valueOf(type);
-                    String value = rs.getString("value");
-                    resume.addContact(contactType, value);
-                }
-                resumeMap.putIfAbsent(uuid, resume);
-            }
-            return new ArrayList<>(resumeMap.values());
+            return new ArrayList<>(getMapResumeFromResulSet(rs).values());
         });
     }
 
@@ -153,5 +125,24 @@ public class SqlStorage implements Storage {
             }
             ps.executeBatch();
         }
+    }
+
+    private Map<String, Resume> getMapResumeFromResulSet(ResultSet rs) throws SQLException {
+        Map<String, Resume> resumeMap = new LinkedHashMap<>();
+        while (rs.next()) {
+            String uuid = rs.getString("uuid");
+            Resume resume = resumeMap.get(uuid);
+            if (resume == null) {
+                resume = new Resume(uuid, rs.getString("full_name"));
+            }
+            String type = rs.getString("type");
+            if (type != null) {
+                ContactType contactType = ContactType.valueOf(type);
+                String value = rs.getString("value");
+                resume.addContact(contactType, value);
+            }
+            resumeMap.put(uuid, resume);
+        }
+        return resumeMap;
     }
 }
