@@ -28,29 +28,33 @@ public class SqlStorage implements Storage {
     @Override
     public Resume get(String uuid) {
         return sqlHelper.execute("" +
-                        "    SELECT * FROM resume r " +
+                        "    SELECT * " +
+                        "      FROM resume r " +
                         " LEFT JOIN contact c " +
                         "        ON r.uuid = c.resume_uuid " +
                         "     WHERE r.uuid =? ",
-            ps -> {
-                ps.setString(1, uuid);
-                ResultSet rs = ps.executeQuery();
-                if (!rs.next()) {
-                    throw new NotExistStorageException(uuid);
-                }
-                Resume r = new Resume(uuid, rs.getString("full_name"));
-                do {
-                    addContact(rs, r);
-                } while (rs.next());
+                ps -> {
+                    ps.setString(1, uuid);
+                    ResultSet rs = ps.executeQuery();
+                    if (!rs.next()) {
+                        throw new NotExistStorageException(uuid);
+                    }
+                    Resume r = new Resume(uuid, rs.getString("full_name"));
+                    do {
+                        addContact(rs, r);
+                    } while (rs.next());
 
-                return r;
-        });
+                    return r;
+                });
     }
 
     @Override
     public void update(Resume r) {
         sqlHelper.transactionalExecute(conn -> {
-            try (PreparedStatement ps = conn.prepareStatement("UPDATE resume SET full_name = ? WHERE uuid = ?")) {
+            try (PreparedStatement ps = conn.prepareStatement("" +
+                    "UPDATE resume " +
+                    "   SET full_name = ? " +
+                    " WHERE uuid = ?")) {
                 ps.setString(1, r.getFullName());
                 ps.setString(2, r.getUuid());
                 if (ps.executeUpdate() != 1) {
@@ -66,7 +70,9 @@ public class SqlStorage implements Storage {
     @Override
     public void save(Resume r) {
         sqlHelper.transactionalExecute(conn -> {
-            try (PreparedStatement ps = conn.prepareStatement("INSERT INTO resume (uuid, full_name) VALUES (?,?)")) {
+            try (PreparedStatement ps = conn.prepareStatement("" +
+                    "INSERT INTO resume (uuid, full_name) " +
+                    "     VALUES (?,?)")) {
                 ps.setString(1, r.getUuid());
                 ps.setString(2, r.getFullName());
                 ps.execute();
@@ -89,22 +95,29 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
-        return sqlHelper.execute("" +
-                "   SELECT * FROM resume r\n" +
-                "LEFT JOIN contact c ON r.uuid = c.resume_uuid\n" +
-                "ORDER BY full_name, uuid", ps -> {
-            ResultSet rs = ps.executeQuery();
-            Map<String, Resume> map = new LinkedHashMap<>();
-            while (rs.next()) {
-                String uuid = rs.getString("uuid");
-                Resume resume = map.get(uuid);
-                if (resume == null) {
-                    resume = new Resume(uuid, rs.getString("full_name"));
+        return sqlHelper.transactionalExecute(conn -> {
+            try (PreparedStatement psResume = conn.prepareStatement("" +
+                    "SELECT * FROM resume r " +
+                    "     ORDER BY full_name, uuid");
+                 PreparedStatement psContact = conn.prepareStatement("" +
+                         "SELECT * FROM contact c ")) {
+                ResultSet rsResume = psResume.executeQuery();
+                ResultSet rsContact = psContact.executeQuery();
+                Map<String, Resume> map = new LinkedHashMap<>();
+                while (rsResume.next()) {
+                    String uuid = rsResume.getString("uuid");
+                    Resume resume = new Resume(uuid, rsResume.getString("full_name"));
+                    while (rsContact.next()) {
+                        if (uuid.equals(rsContact.getString("resume_uuid"))) {
+                            String type = rsContact.getString("type");
+                            String value = rsContact.getString("value");
+                            resume.addContact(ContactType.valueOf(type), value);
+                        }
+                    }
                     map.put(uuid, resume);
                 }
-                addContact(rs, resume);
+                return new ArrayList<>(map.values());
             }
-            return new ArrayList<>(map.values());
         });
     }
 
