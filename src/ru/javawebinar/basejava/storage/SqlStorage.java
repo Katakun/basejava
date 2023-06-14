@@ -27,11 +27,10 @@ public class SqlStorage implements Storage {
     @Override
     public Resume get(String uuid) {
         return sqlHelper.execute("" +
-                        "    SELECT * " +
-                        "      FROM resume r " +
-                        " LEFT JOIN contact c " +
-                        "        ON r.uuid = c.resume_uuid " +
-                        "     WHERE r.uuid =? ",
+                    "SELECT * FROM resume r " +
+                    "    LEFT JOIN contact c " +
+                    "           ON r.uuid = c.resume_uuid " +
+                    "        WHERE r.uuid =? ",
                 ps -> {
                     ps.setString(1, uuid);
                     ResultSet rs = ps.executeQuery();
@@ -86,7 +85,9 @@ public class SqlStorage implements Storage {
 
     @Override
     public void delete(String uuid) {
-        sqlHelper.execute("DELETE FROM resume WHERE uuid=?", ps -> {
+        sqlHelper.execute("" +
+                "DELETE FROM resume " +
+                "      WHERE uuid=?", ps -> {
             ps.setString(1, uuid);
             if (ps.executeUpdate() == 0) {
                 throw new NotExistStorageException(uuid);
@@ -102,9 +103,12 @@ public class SqlStorage implements Storage {
                     "SELECT * FROM resume r " +
                     "     ORDER BY full_name, uuid");
                  PreparedStatement psContact = conn.prepareStatement("" +
-                         "SELECT * FROM contact c ")) {
+                     "SELECT * FROM contact c ");
+                 PreparedStatement psSection = conn.prepareStatement("" +
+                     "SELECT * FROM section s ")) {
                 ResultSet rsResume = psResume.executeQuery();
                 ResultSet rsContact = psContact.executeQuery();
+                ResultSet rsSection = psSection.executeQuery();
                 Map<String, Resume> map = new LinkedHashMap<>();
                 while (rsResume.next()) {
                     String uuid = rsResume.getString("uuid");
@@ -116,6 +120,13 @@ public class SqlStorage implements Storage {
                             resume.addContact(ContactType.valueOf(type), value);
                         }
                     }
+                    while (rsSection.next()) {
+                        if (uuid.equals(rsSection.getString("resume_uuid"))) {
+                            String type = rsSection.getString("type");
+                            Section section = getSectionFromString(type, rsSection.getString("value"));
+                            resume.addSection(SectionType.valueOf(type), section);
+                        }
+                    }
                     map.put(uuid, resume);
                 }
                 return new ArrayList<>(map.values());
@@ -125,14 +136,18 @@ public class SqlStorage implements Storage {
 
     @Override
     public int size() {
-        return sqlHelper.execute("SELECT count(*) FROM resume", st -> {
+        return sqlHelper.execute("" +
+                "SELECT count(*) " +
+                "  FROM resume", st -> {
             ResultSet rs = st.executeQuery();
             return rs.next() ? rs.getInt(1) : 0;
         });
     }
 
     private void insertContact(Connection conn, Resume r) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement("INSERT INTO contact (resume_uuid, type, value) VALUES (?,?,?)")) {
+        try (PreparedStatement ps = conn.prepareStatement("" +
+                "INSERT INTO contact (resume_uuid, type, value) " +
+                "     VALUES (?,?,?)")) {
             for (Map.Entry<ContactType, String> e : r.getContacts().entrySet()) {
                 ps.setString(1, r.getUuid());
                 ps.setString(2, e.getKey().name());
@@ -161,13 +176,23 @@ public class SqlStorage implements Storage {
         StringBuilder result = new StringBuilder();
         if (section instanceof ListSection) {
             List<String> list = ((ListSection) section).getItems();
-            for (String s: list) {
+            for (String s : list) {
                 result.append(s + "\n");
             }
         } else {
             result.append(((TextSection) section).getContent());
         }
         return result.toString();
+    }
+
+    private Section getSectionFromString(String type, String value) {
+        if (type.equals("PERSONAL") || type.equals("OBJECTIVE")) {
+            return new TextSection(value);
+        } else {
+            String[] values = value.split("\n");
+            return new ListSection(values);
+        }
+
     }
 
     private void deleteContacts(Connection conn, Resume r) {
