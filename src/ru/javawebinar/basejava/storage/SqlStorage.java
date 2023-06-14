@@ -27,10 +27,12 @@ public class SqlStorage implements Storage {
     @Override
     public Resume get(String uuid) {
         return sqlHelper.execute("" +
-                    "SELECT * FROM resume r " +
-                    "    LEFT JOIN contact c " +
-                    "           ON r.uuid = c.resume_uuid " +
-                    "        WHERE r.uuid =? ",
+                        "SELECT * FROM resume r " +
+                        "    LEFT JOIN contact c " +
+                        "           ON r.uuid = c.resume_uuid " +
+                        "    LEFT JOIN section s " +
+                        "           ON r.uuid = s.resume_uuid" +
+                        "        WHERE r.uuid = ? ",
                 ps -> {
                     ps.setString(1, uuid);
                     ResultSet rs = ps.executeQuery();
@@ -40,6 +42,7 @@ public class SqlStorage implements Storage {
                     Resume r = new Resume(uuid, rs.getString("full_name"));
                     do {
                         addContact(rs, r);
+                        addSection(rs, r);
                     } while (rs.next());
 
                     return r;
@@ -103,9 +106,9 @@ public class SqlStorage implements Storage {
                     "SELECT * FROM resume r " +
                     "     ORDER BY full_name, uuid");
                  PreparedStatement psContact = conn.prepareStatement("" +
-                     "SELECT * FROM contact c ");
+                         "SELECT * FROM contact c ");
                  PreparedStatement psSection = conn.prepareStatement("" +
-                     "SELECT * FROM section s ")) {
+                         "SELECT * FROM section s ")) {
                 ResultSet rsResume = psResume.executeQuery();
                 ResultSet rsContact = psContact.executeQuery();
                 ResultSet rsSection = psSection.executeQuery();
@@ -115,15 +118,15 @@ public class SqlStorage implements Storage {
                     Resume resume = new Resume(uuid, rsResume.getString("full_name"));
                     while (rsContact.next()) {
                         if (uuid.equals(rsContact.getString("resume_uuid"))) {
-                            String type = rsContact.getString("type");
-                            String value = rsContact.getString("value");
+                            String type = rsContact.getString("contact_type");
+                            String value = rsContact.getString("contact_value");
                             resume.addContact(ContactType.valueOf(type), value);
                         }
                     }
                     while (rsSection.next()) {
                         if (uuid.equals(rsSection.getString("resume_uuid"))) {
-                            String type = rsSection.getString("type");
-                            Section section = getSectionFromString(type, rsSection.getString("value"));
+                            String type = rsSection.getString("section_type");
+                            Section section = getSectionFromString(type, rsSection.getString("section_value"));
                             resume.addSection(SectionType.valueOf(type), section);
                         }
                     }
@@ -146,7 +149,7 @@ public class SqlStorage implements Storage {
 
     private void insertContact(Connection conn, Resume r) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement("" +
-                "INSERT INTO contact (resume_uuid, type, value) " +
+                "INSERT INTO contact (resume_uuid, contact_type, contact_value) " +
                 "     VALUES (?,?,?)")) {
             for (Map.Entry<ContactType, String> e : r.getContacts().entrySet()) {
                 ps.setString(1, r.getUuid());
@@ -160,7 +163,7 @@ public class SqlStorage implements Storage {
 
     private void insertSection(Connection conn, Resume r) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement("" +
-                "INSERT INTO section (resume_uuid, type, value) " +
+                "INSERT INTO section (resume_uuid, section_type, section_value) " +
                 "     VALUES (?,?,?)")) {
             for (Map.Entry<SectionType, Section> e : r.getSections().entrySet()) {
                 ps.setString(1, r.getUuid());
@@ -177,7 +180,7 @@ public class SqlStorage implements Storage {
         if (section instanceof ListSection) {
             List<String> list = ((ListSection) section).getItems();
             for (String s : list) {
-                result.append(s + "\n");
+                result.append(s).append("\n");
             }
         } else {
             result.append(((TextSection) section).getContent());
@@ -192,7 +195,6 @@ public class SqlStorage implements Storage {
             String[] values = value.split("\n");
             return new ListSection(values);
         }
-
     }
 
     private void deleteContacts(Connection conn, Resume r) {
@@ -211,10 +213,19 @@ public class SqlStorage implements Storage {
         });
     }
 
+    private void addSection(ResultSet rs, Resume r) throws SQLException {
+        String section_type = rs.getString("section_type");
+        String section_value = rs.getString("section_value");
+        if (null != section_type && null != section_value) {
+            Section section = getSectionFromString(section_type, section_value);
+            r.addSection(SectionType.valueOf(section_type), section);
+        }
+    }
+
     private void addContact(ResultSet rs, Resume r) throws SQLException {
-        String value = rs.getString("value");
+        String value = rs.getString("contact_value");
         if (value != null) {
-            r.addContact(ContactType.valueOf(rs.getString("type")), value);
+            r.addContact(ContactType.valueOf(rs.getString("contact_type")), value);
         }
     }
 }
