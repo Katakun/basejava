@@ -113,30 +113,26 @@ public class SqlStorage implements Storage {
                          "SELECT * FROM contact c ");
                  PreparedStatement psSection = conn.prepareStatement("" +
                          "SELECT * FROM section s ")) {
+                Map<String, Resume> resumeMap = new LinkedHashMap<>();
                 ResultSet rsResume = psResume.executeQuery();
-                ResultSet rsContact = psContact.executeQuery();
-                ResultSet rsSection = psSection.executeQuery();
-                Map<String, Resume> map = new LinkedHashMap<>();
                 while (rsResume.next()) {
                     String uuid = rsResume.getString("uuid");
                     Resume resume = new Resume(uuid, rsResume.getString("full_name"));
+                    ResultSet rsContact = psContact.executeQuery();
                     while (rsContact.next()) {
                         if (uuid.equals(rsContact.getString("resume_uuid"))) {
-                            String type = rsContact.getString("contact_type");
-                            String value = rsContact.getString("contact_value");
-                            resume.addContact(ContactType.valueOf(type), value);
+                            addContact(rsContact, resume);
                         }
                     }
+                    ResultSet rsSection = psSection.executeQuery();
                     while (rsSection.next()) {
                         if (uuid.equals(rsSection.getString("resume_uuid"))) {
-                            String type = rsSection.getString("section_type");
-                            Section section = getSectionFromString(type, rsSection.getString("section_value"));
-                            resume.addSection(SectionType.valueOf(type), section);
+                            addSection(rsSection, resume);
                         }
                     }
-                    map.put(uuid, resume);
+                    resumeMap.put(uuid, resume);
                 }
-                return new ArrayList<>(map.values());
+                return new ArrayList<>(resumeMap.values());
             }
         });
     }
