@@ -181,13 +181,19 @@ public class SqlStorage implements Storage {
 
     private String getStringFromSection(Section section) {
         StringBuilder result = new StringBuilder();
-        if (section instanceof ListSection) {
-            List<String> list = ((ListSection) section).getItems();
-            for (String s : list) {
-                result.append(s).append("\n");
-            }
-        } else {
-            result.append(((TextSection) section).getContent());
+        String className = section.getClass().getSimpleName();
+        switch (className) {
+            case "ListSection":
+                List<String> list = ((ListSection) section).getItems();
+                for (String s : list) {
+                    result.append(s).append("\n");
+                }
+                break;
+            case "TextSection":
+                result.append(((TextSection) section).getContent());
+                break;
+            default:
+                throw new IllegalStateException("Wrong section type");
         }
         return result.toString();
     }
