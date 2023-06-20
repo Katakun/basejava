@@ -11,8 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class ResumeServlet extends HttpServlet {
-    private final SqlStorage sqlStorage = (SqlStorage) Config.get().getStorage();
-
+    private SqlStorage sqlStorage;
     private String htmlStart = "" +
             "<!DOCTYPE html>\n" +
             "<html>\n" +
@@ -30,11 +29,18 @@ public class ResumeServlet extends HttpServlet {
             "    <th>UUID</th>\n" +
             "    <th>Full name</th>    \n" +
             "  </tr>";
-
     private String htmlEnd = "" +
             "</table>\n" +
             "</body>\n" +
             "</html>\n";
+
+    public ResumeServlet() {
+        init();
+    }
+
+    public void init() {
+        sqlStorage = (SqlStorage) Config.get().getStorage();
+    }
 
     private String tableAllResumes() {
         StringBuilder sb = new StringBuilder();
@@ -66,10 +72,7 @@ public class ResumeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
-//        response.setHeader("Content-Type", "text/html; charset=UTF-8");
         response.setContentType("text/html; charset=UTF-8");
-
-
         String uuid = request.getParameter("uuid");
         response.getWriter().write(uuid == null ? tableAllResumes() : tableOneResumes(uuid));
     }
