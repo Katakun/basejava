@@ -106,30 +106,33 @@ public class SqlStorage implements Storage {
     @Override
     public List<Resume> getAllSorted() {
         return sqlHelper.transactionalExecute(conn -> {
+            Map<String, Resume> resumeMap = new LinkedHashMap<>();
             try (PreparedStatement psResume = conn.prepareStatement("" +
                     "SELECT * FROM resume r " +
-                    "     ORDER BY full_name, uuid");
-                 PreparedStatement psContact = conn.prepareStatement("" +
-                         "SELECT * FROM contact c ");
-                 PreparedStatement psSection = conn.prepareStatement("" +
-                         "SELECT * FROM section s ")) {
-                Map<String, Resume> resumeMap = new LinkedHashMap<>();
-                ResultSet rsResume = psResume.executeQuery();
-                while (rsResume.next()) {
-                    String uuid = rsResume.getString("uuid");
-                    Resume resume = new Resume(uuid, rsResume.getString("full_name"));
-                    ResultSet rsContact = psContact.executeQuery();
-                    while (rsContact.next() && uuid.equals(rsContact.getString("resume_uuid"))) {
-                        addContact(rsContact, resume);
-                    }
-                    ResultSet rsSection = psSection.executeQuery();
-                    while (rsSection.next() && uuid.equals(rsSection.getString("resume_uuid"))) {
-                        addSection(rsSection, resume);
-                    }
-                    resumeMap.put(uuid, resume);
+                    "     ORDER BY full_name, uuid")) {
+                final ResultSet rs = psResume.executeQuery();
+                while (rs.next()) {
+                    final String uuid = rs.getString("uuid");
+                    resumeMap.put(uuid, new Resume(uuid, rs.getString("full_name")));
                 }
-                return new ArrayList<>(resumeMap.values());
             }
+            try (PreparedStatement psContact = conn.prepareStatement("" +
+                    "SELECT * FROM contact c ")) {
+                final ResultSet rs = psContact.executeQuery();
+                while (rs.next()) {
+                    final Resume resume = resumeMap.get(rs.getString("resume_uuid"));
+                    addContact(rs, resume);
+                }
+            }
+            try (PreparedStatement psSection = conn.prepareStatement("" +
+                    "SELECT * FROM section s ")) {
+                final ResultSet rs = psSection.executeQuery();
+                while (rs.next()) {
+                    final Resume resume = resumeMap.get(rs.getString("resume_uuid"));
+                    addSection(rs, resume);
+                }
+            }
+            return new ArrayList<>(resumeMap.values());
         });
     }
 
