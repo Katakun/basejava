@@ -119,16 +119,12 @@ public class SqlStorage implements Storage {
                     String uuid = rsResume.getString("uuid");
                     Resume resume = new Resume(uuid, rsResume.getString("full_name"));
                     ResultSet rsContact = psContact.executeQuery();
-                    while (rsContact.next()) {
-                        if (uuid.equals(rsContact.getString("resume_uuid"))) {
-                            addContact(rsContact, resume);
-                        }
+                    while (rsContact.next() && uuid.equals(rsContact.getString("resume_uuid"))) {
+                        addContact(rsContact, resume);
                     }
                     ResultSet rsSection = psSection.executeQuery();
-                    while (rsSection.next()) {
-                        if (uuid.equals(rsSection.getString("resume_uuid"))) {
-                            addSection(rsSection, resume);
-                        }
+                    while (rsSection.next() && uuid.equals(rsSection.getString("resume_uuid"))) {
+                        addSection(rsSection, resume);
                     }
                     resumeMap.put(uuid, resume);
                 }
