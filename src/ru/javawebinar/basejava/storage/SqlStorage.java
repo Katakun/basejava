@@ -176,8 +176,7 @@ public class SqlStorage implements Storage {
 
     private String getStringFromSection(Section section) {
         StringBuilder result = new StringBuilder();
-        String className = section.getClass().getSimpleName();
-        switch (className) {
+        switch (section.getClass().getSimpleName()) {
             case "ListSection":
                 List<String> list = ((ListSection) section).getItems();
                 for (String s : list) {
@@ -194,11 +193,16 @@ public class SqlStorage implements Storage {
     }
 
     private Section getSectionFromString(String type, String value) {
-        if (type.equals("PERSONAL") || type.equals("OBJECTIVE")) {
-            return new TextSection(value);
-        } else {
-            String[] values = value.split("\n");
-            return new ListSection(values);
+        switch (type) {
+            case "PERSONAL":
+            case "OBJECTIVE":
+                return new TextSection(value);
+            case "ACHIEVEMENT":
+            case "QUALIFICATIONS":
+                String[] values = value.split("\n");
+                return new ListSection(values);
+            default:
+                throw new IllegalStateException("Wrong section type");
         }
     }
 

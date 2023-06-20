@@ -34,10 +34,6 @@ public class ResumeServlet extends HttpServlet {
             "</body>\n" +
             "</html>\n";
 
-    public ResumeServlet() {
-        init();
-    }
-
     public void init() {
         sqlStorage = (SqlStorage) Config.get().getStorage();
     }
