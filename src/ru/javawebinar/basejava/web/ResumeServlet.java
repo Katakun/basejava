@@ -2,16 +2,19 @@ package ru.javawebinar.basejava.web;
 
 import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.model.Resume;
-import ru.javawebinar.basejava.storage.SqlStorage;
+import ru.javawebinar.basejava.storage.Storage;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 
 public class ResumeServlet extends HttpServlet {
-    private SqlStorage sqlStorage;
+    private Storage Storage;
     private String htmlStart = "" +
             "<!DOCTYPE html>\n" +
             "<html>\n" +
@@ -34,17 +37,18 @@ public class ResumeServlet extends HttpServlet {
             "</body>\n" +
             "</html>\n";
 
-    public void init() {
-        sqlStorage = (SqlStorage) Config.get().getStorage();
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        Storage = Config.get().getStorage();
     }
 
     private String tableAllResumes() {
         StringBuilder sb = new StringBuilder();
-        List<Resume> allResumes = sqlStorage.getAllSorted();
+        List<Resume> allResumes = Storage.getAllSorted();
         for (Resume resume : allResumes) {
             sb.append("" +
                     "  <tr>\n" +
-                    "    <td>" + resume.getUuid() + "</td>\n" +
+                    "    <td><a href=\"resume?uuid=" + resume.getUuid() + "\">" + resume.getUuid() + "</td>\n" +
                     "    <td>" + resume.getFullName() + "</td>\n" +
                     "  </tr>\n");
         }
@@ -52,7 +56,7 @@ public class ResumeServlet extends HttpServlet {
     }
 
     private String tableOneResumes(String uuid) {
-        Resume resume = sqlStorage.get(uuid);
+        Resume resume = Storage.get(uuid);
         String resumeRow = "" +
                 "  <tr>\n" +
                 "    <td>" + resume.getUuid() + "</td>\n" +
@@ -70,6 +74,7 @@ public class ResumeServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
         String uuid = request.getParameter("uuid");
-        response.getWriter().write(uuid == null ? tableAllResumes() : tableOneResumes(uuid));
+        Writer writer = response.getWriter();
+        writer.write(uuid == null ? tableAllResumes() : tableOneResumes(uuid));
     }
 }
