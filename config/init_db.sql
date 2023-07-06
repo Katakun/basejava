@@ -16,7 +16,7 @@ CREATE UNIQUE INDEX contact_uuid_type_index
 
 CREATE TABLE section
 (
-    id            SERIAL,
+    id            SERIAL PRIMARY KEY,
     resume_uuid   CHAR(36) NOT NULL REFERENCES resume (uuid) ON DELETE CASCADE,
     section_type  TEXT     NOT NULL,
     section_value TEXT     NOT NULL

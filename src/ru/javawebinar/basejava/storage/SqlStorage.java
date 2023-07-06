@@ -2,11 +2,9 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.ContactType;
-import ru.javawebinar.basejava.model.ListSection;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.model.Section;
 import ru.javawebinar.basejava.model.SectionType;
-import ru.javawebinar.basejava.model.TextSection;
 import ru.javawebinar.basejava.sql.SqlHelper;
 import ru.javawebinar.basejava.util.JsonParser;
 
@@ -20,8 +18,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-// TODO implement Section (except OrganizationSection)
-// TODO Join and split ListSection by `\n`
 public class SqlStorage implements Storage {
     public final SqlHelper sqlHelper;
 
@@ -191,38 +187,6 @@ public class SqlStorage implements Storage {
                 ps.addBatch();
             }
             ps.executeBatch();
-        }
-    }
-
-    private String getStringFromSection(Section section) {
-        StringBuilder result = new StringBuilder();
-        switch (section.getClass().getSimpleName()) {
-            case "ListSection":
-                List<String> list = ((ListSection) section).getItems();
-                for (String s : list) {
-                    result.append(s).append("\n");
-                }
-                break;
-            case "TextSection":
-                result.append(((TextSection) section).getContent());
-                break;
-            default:
-                throw new IllegalStateException("Wrong section type");
-        }
-        return result.toString();
-    }
-
-    private Section getSectionFromString(String type, String value) {
-        switch (type) {
-            case "PERSONAL":
-            case "OBJECTIVE":
-                return new TextSection(value);
-            case "ACHIEVEMENT":
-            case "QUALIFICATIONS":
-                String[] values = value.split("\n");
-                return new ListSection(values);
-            default:
-                throw new IllegalStateException("Wrong section type");
         }
     }
 

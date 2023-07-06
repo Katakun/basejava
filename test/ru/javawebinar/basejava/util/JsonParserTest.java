@@ -10,7 +10,7 @@ import static ru.javawebinar.basejava.TestData.R1;
 
 public class JsonParserTest {
     @Test
-    public void testResume() throws Exception {
+    public void testWriteToJsonReadFromJasonResume() throws Exception {
         String json = JsonParser.write(R1);
         System.out.println(json);
         Resume resume = JsonParser.read(json, Resume.class);
@@ -18,7 +18,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void writeSection() throws Exception {
+    public void testWriteToJsonReadFromJasonSection() throws Exception {
         Section section1 = new TextSection("Objective1");
         String json = JsonParser.write(section1, Section.class);
         System.out.println(json);
