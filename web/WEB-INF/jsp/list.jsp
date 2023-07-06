@@ -6,12 +6,12 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" href="/basejava/web/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <title>Список всех резюме</title>
 </head>
 <body>
     <section>
-        <table>
+        <table class="table">
             <tr>
                 <th>Имя</th>
                 <th>Email</th>
@@ -20,7 +20,7 @@
                 for (Resume resume : (List<Resume>) request.getAttribute("resumes")) {
             %>
             <tr>
-                <td><a href="resume?uuid="<%=resume.getUuid()%>><%=resume.getFullName()%></a></td>
+                <td><a href="resume?uuid=<%=resume.getUuid()%>"><%=resume.getFullName()%></a></td>
                 <td><%=resume.getContact(ContactType.MAIL)%></td>
             </tr>
             <%
