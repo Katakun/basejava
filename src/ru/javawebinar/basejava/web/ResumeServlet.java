@@ -14,7 +14,7 @@ import java.io.Writer;
 import java.util.List;
 
 public class ResumeServlet extends HttpServlet {
-    private Storage Storage;
+    private Storage storage;
     private String htmlStart = "" +
             "<!DOCTYPE html>\n" +
             "<html>\n" +
@@ -39,12 +39,12 @@ public class ResumeServlet extends HttpServlet {
 
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        Storage = Config.get().getStorage();
+        storage = Config.get().getStorage();
     }
 
     private String tableAllResumes() {
         StringBuilder sb = new StringBuilder();
-        List<Resume> allResumes = Storage.getAllSorted();
+        List<Resume> allResumes = storage.getAllSorted();
         for (Resume resume : allResumes) {
             sb.append("" +
                     "  <tr>\n" +
@@ -56,7 +56,7 @@ public class ResumeServlet extends HttpServlet {
     }
 
     private String tableOneResumes(String uuid) {
-        Resume resume = Storage.get(uuid);
+        Resume resume = storage.get(uuid);
         String resumeRow = "" +
                 "  <tr>\n" +
                 "    <td>" + resume.getUuid() + "</td>\n" +
