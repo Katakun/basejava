@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/style.css">
     <title>Список всех резюме</title>
 </head>
+<jsp:include page="fragments/header.jsp"/>
 <body>
     <section>
         <table class="table">
@@ -29,4 +30,5 @@
         </table>
     </section>
 </body>
+<jsp:include page="fragments/footer.jsp"/>
 </html>
