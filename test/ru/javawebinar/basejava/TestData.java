@@ -17,16 +17,24 @@ public class TestData {
     public static final Resume R4;
 
     static {
-        R1 = new Resume(UUID_1, "Name1");
-        R2 = new Resume(UUID_2, "Name2");
-        R3 = new Resume(UUID_3, "Name3");
-        R4 = new Resume(UUID_4, "Name4");
+        R1 = new Resume(UUID_1, "Иванов Первый");
+        R2 = new Resume(UUID_2, "Петров Второй");
+        R3 = new Resume(UUID_3, "Сидоров Третий");
+        R4 = new Resume(UUID_4, "Федоров Четвертый");
 
-        R1.addContact(ContactType.MAIL, "mail1@ya.ru");
-        R1.addContact(ContactType.PHONE, "11111");
+        R1.addContact(ContactType.MAIL, "ivanov@mail.ru");
+        R1.addContact(ContactType.PHONE, "111-11-11");
 
-        R4.addContact(ContactType.PHONE, "44444");
-        R4.addContact(ContactType.SKYPE, "Skype");
+        R2.addContact(ContactType.MAIL, "petrov@mail.ru");
+        R2.addContact(ContactType.PHONE, "222-22-22");
+        R2.addContact(ContactType.SKYPE, "skype222");
+
+        R3.addContact(ContactType.MAIL, "sidorov@mail.ru");
+        R3.addContact(ContactType.PHONE, "333-33-33");
+
+        R4.addContact(ContactType.MAIL, "fedorov@mail.ru");
+        R4.addContact(ContactType.PHONE, "444-44-44");
+        R4.addContact(ContactType.SKYPE, "Skype444");
 
         R1.addSection(SectionType.OBJECTIVE, new TextSection("Objective1"));
         R1.addSection(SectionType.PERSONAL, new TextSection("Personal data"));
@@ -48,7 +56,5 @@ public class TestData {
                                 new Organization.Position(2001, Month.MARCH, 2005, Month.JANUARY, "student", "IT facultet")),
                         new Organization("Organization12", "http://Organization12.ru")));
 
-        R2.addContact(ContactType.SKYPE, "skype2");
-        R2.addContact(ContactType.PHONE, "22222");
     }
 }
