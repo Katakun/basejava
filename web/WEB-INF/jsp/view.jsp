@@ -11,12 +11,26 @@
 <jsp:include page="fragments/header.jsp"/>
 <body>
 <section>
+
+<%--    Имя --%>
     <h2>${resume.fullName}&nbsp;<a href="resume?uuid=${resume.uuid}&action=edit"><img src="img/pencil.png"></a></h2>
+
+<%--    Контакты --%>
     <p>
         <c:forEach var="contactEntry" items="${resume.contacts}">
             <jsp:useBean id="contactEntry"
                          type="java.util.Map.Entry<ru.javawebinar.basejava.model.ContactType, java.lang.String>"/>
-            <%=contactEntry.getKey().toHtml(contactEntry.getValue())%><br/>
+            <%=contactEntry.getKey().toHtml(contactEntry.getValue())%><br>
+        </c:forEach>
+    </p>
+
+<%--   Секции --%>
+    <p>
+        <c:forEach var="sectionEntry" items="${resume.sections}">
+            <jsp:useBean id="sectionEntry"
+                         type="java.util.Map.Entry<ru.javawebinar.basejava.model.SectionType, ru.javawebinar.basejava.model.Section>"/>
+            <%=sectionEntry.getKey().getTitle()%><br>
+            <%=sectionEntry.getValue().toString()%><br><br>
         </c:forEach>
     </p>
 </section>
