@@ -1,4 +1,5 @@
 <%@ page import="ru.javawebinar.basejava.model.ContactType" %>
+<%@ page import="ru.javawebinar.basejava.model.SectionType" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -14,10 +15,14 @@
 <section>
     <form method="post" action="resume" enctype="application/x-www-form-urlencoded">
         <input type="hidden" name="uuid" value="${resume.uuid}">
+
+<%--        Имя--%>
         <dl>
             <dt>Имя:</dt>
             <dd><input type="text" name="fullName" size="50" value="${resume.fullName}"></dd>
         </dl>
+
+<%--        Котакты--%>
         <h3>Контакты:</h3>
         <c:forEach var="type" items="<%=ContactType.values()%>">
             <dl>
@@ -25,6 +30,16 @@
                 <dd><input type="text" name="${type.name()}" size="30" value="${resume.getContact(type)}"></dd>
             </dl>
         </c:forEach>
+
+<%--        Секции--%>
+        <h3>Секции:</h3>
+        <c:forEach var="type" items="<%=SectionType.values()%>">
+            <dl>
+                <dt>${type.title}</dt>
+                <dd><input type="text" name="${type.name()}" size="30" value="${resume.getSection(type)}"></dd>
+            </dl>
+        </c:forEach>
+
         <hr>
         <button type="submit">Сохранить</button>
         <button onclick="window.hastory.back()">Отменить</button>
