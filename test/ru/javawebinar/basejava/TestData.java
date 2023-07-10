@@ -78,7 +78,14 @@ public class TestData {
                         new Organization("Java Online Projects", "http://javaops.ru/",
                                 new Organization.Position(2013, Month.JANUARY,
                                         "Автор проекта.",
-                                        "Создание, организация и проведение Java онлайн проектов и стажировок.")),
+                                        "Создание, организация и проведение Java онлайн проектов и стажировок."),
+                                new Organization.Position(2010, Month.JANUARY, 2013, Month.AUGUST,
+                                        "Ведущий программист.",
+                                        "Реализация клиентской и серверной части CRM. Реализация RIA-приложения " +
+                                                "для администрирования, мониторинга и анализа результатов в области " +
+                                                "алгоритмического трейдинга.")
+
+                        ),
                         new Organization("Wrike", "https://www.wrike.com/",
                                 new Organization.Position(2014, Month.NOVEMBER, 2016, Month.JANUARY,
                                         "Старший разработчик (backend)",
