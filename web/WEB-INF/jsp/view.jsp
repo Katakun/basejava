@@ -1,3 +1,4 @@
+<%@ page import="ru.javawebinar.basejava.model.SectionType" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -12,10 +13,10 @@
 <body>
 <section>
 
-<%--    Имя --%>
+    <%--    Имя --%>
     <h2>${resume.fullName}&nbsp;<a href="resume?uuid=${resume.uuid}&action=edit"><img src="img/pencil.png"></a></h2>
 
-<%--    Контакты --%>
+    <%--    Контакты --%>
     <p>
         <c:forEach var="contactEntry" items="${resume.contacts}">
             <jsp:useBean id="contactEntry"
@@ -24,15 +25,36 @@
         </c:forEach>
     </p>
 
-<%--   Секции --%>
+    <%--   Секции --%>
     <p>
         <c:forEach var="sectionEntry" items="${resume.sections}">
             <jsp:useBean id="sectionEntry"
                          type="java.util.Map.Entry<ru.javawebinar.basejava.model.SectionType, ru.javawebinar.basejava.model.Section>"/>
-            <%=sectionEntry.getKey().getTitle()%><br>
-            <%=sectionEntry.getValue().toString()%><br><br>
+        <c:choose>
+
+        <c:when test="${sectionEntry.key==SectionType.PERSONAL || sectionEntry.key==SectionType.OBJECTIVE}">
+            ${sectionEntry.key.title} <br>
+            ${sectionEntry.value}
+        </c:when>
+
+        <c:when test="${sectionEntry.key==SectionType.ACHIEVEMENT || sectionEntry.key==SectionType.QUALIFICATIONS}">
+            ${sectionEntry.key.title} <br>
+    <ul>
+        <c:forEach var="item" items="${sectionEntry.value.getItems()}">
+            <li>${item}</li>
         </c:forEach>
-    </p>
+    </ul>
+
+    </c:when>
+
+    <c:when test="${sectionEntry.key==SectionType.EXPERIENCE || sectionEntry.key==SectionType.EDUCATION}">
+        ${sectionEntry.key.title} <br>
+        ${sectionEntry.value}
+    </c:when>
+
+    </c:choose>
+    <br><br>
+    </c:forEach>
 </section>
 </body>
 <jsp:include page="fragments/footer.jsp"/>

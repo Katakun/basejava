@@ -2,8 +2,14 @@ package ru.javawebinar.basejava.web;
 
 import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.model.ContactType;
+import ru.javawebinar.basejava.model.ListSection;
+import ru.javawebinar.basejava.model.OrganizationSection;
 import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.model.Section;
+import ru.javawebinar.basejava.model.SectionType;
+import ru.javawebinar.basejava.model.TextSection;
 import ru.javawebinar.basejava.storage.Storage;
+import ru.javawebinar.basejava.util.JsonParser;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -32,6 +38,32 @@ public class ResumeServlet extends HttpServlet {
                 r.addContact(type, value);
             } else {
                 r.getContacts().remove(type);
+            }
+        }
+        for (SectionType type : SectionType.values()) {
+            //    Personal                     PERSONAL
+            String value = request.getParameter(type.name());
+            if (value != null && value.trim().length() != 0) {
+                Section section;
+                switch (type.name()) {
+                    case "PERSONAL":
+                    case "OBJECTIVE":
+                        section = new TextSection(value);
+                        break;
+                    case "ACHIEVEMENT":
+                    case "QUALIFICATIONS":
+                        section = new ListSection(value);
+                        break;
+                    case "EXPERIENCE":
+                    case "EDUCATION":
+                        section = JsonParser.read(value, OrganizationSection.class);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Wrong section type");
+                }
+                r.addSection(type, section);
+            } else {
+                r.getSections().remove(type);
             }
         }
         storage.update(r);

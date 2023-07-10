@@ -42,7 +42,7 @@
 
         <hr>
         <button type="submit">Сохранить</button>
-        <button onclick="window.hastory.back()">Отменить</button>
+        <button onclick="window.history.back()">Отменить</button>
     </form>
 </section>
 </body>
