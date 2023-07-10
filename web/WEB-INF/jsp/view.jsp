@@ -30,36 +30,45 @@
         <c:forEach var="sectionEntry" items="${resume.sections}">
             <jsp:useBean id="sectionEntry"
                          type="java.util.Map.Entry<ru.javawebinar.basejava.model.SectionType, ru.javawebinar.basejava.model.Section>"/>
-            <c:choose>
+        <c:choose>
 
-                <%--TextSection--%>
-            <c:when test="${sectionEntry.key==SectionType.PERSONAL || sectionEntry.key==SectionType.OBJECTIVE}">
-                ${sectionEntry.key.title} <br>
-                ${sectionEntry.value}
-            </c:when>
+            <%--TextSection--%>
+        <c:when test="${sectionEntry.key==SectionType.PERSONAL || sectionEntry.key==SectionType.OBJECTIVE}">
+            ${sectionEntry.key.title} <br>
+            ${sectionEntry.value}
+        </c:when>
 
-                <%--ListSection--%>
-            <c:when test="${sectionEntry.key==SectionType.ACHIEVEMENT || sectionEntry.key==SectionType.QUALIFICATIONS}">
-                ${sectionEntry.key.title} <br>
-            <ul>
-                <c:forEach var="item" items="${sectionEntry.value.getItems()}">
-                    <li>${item}</li>
+            <%--ListSection--%>
+        <c:when test="${sectionEntry.key==SectionType.ACHIEVEMENT || sectionEntry.key==SectionType.QUALIFICATIONS}">
+            ${sectionEntry.key.title} <br>
+    <ul>
+        <c:forEach var="item" items="${sectionEntry.value.getItems()}">
+            <li>${item}</li>
+        </c:forEach>
+    </ul>
+    </c:when>
+
+        <%--OrganisationSection--%>
+    <c:when test="${sectionEntry.key==SectionType.EXPERIENCE || sectionEntry.key==SectionType.EDUCATION}">
+        ${sectionEntry.key.title} <br>
+        <ul>
+            <c:forEach var="organization" items="${sectionEntry.value.getOrganizations()}">
+                <a href="${organization.getHomePage().getUrl()}">${organization.getHomePage().getName()}</a>
+                <c:forEach var="position" items="${organization.getPositions()}">
+                    <ul>
+                        <li>
+                                ${position.getStartDate()} - ${position.getEndDate()}<br>
+                                ${position.getTitle()}<br>
+                                ${position.getDescription()}<br>
+                        </li>
+                    </ul>
                 </c:forEach>
-            </ul>
-             </c:when>
+            </c:forEach>
+        </ul>
+    </c:when>
 
-            <%--OrganisationSection--%>
-            <c:when test="${sectionEntry.key==SectionType.EXPERIENCE || sectionEntry.key==SectionType.EDUCATION}">
-                ${sectionEntry.key.title} <br>
-                <ul>
-                    <c:forEach var="organization" items="${sectionEntry.value.getOrganizations()}">
-                    <li>${organization}</li>
-                    </c:forEach>
-                </ul>
-            </c:when>
-
-        </c:choose>
-        <br><br>
+    </c:choose>
+    <br><br>
     </c:forEach>
 </section>
 </body>
