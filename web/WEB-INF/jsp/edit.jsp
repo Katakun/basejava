@@ -54,12 +54,32 @@
                     </c:forEach>
                 </c:when>
 
-<%--                OrganizatonSection--%>
+                <%--                OrganizatonSection--%>
                 <c:when test="${type==SectionType.EXPERIENCE || type==SectionType.EDUCATION}">
                     <h4>${type.title}</h4>
                     <c:forEach var="organization" items="${resume.getSection(type).getOrganizations()}">
-                        <textarea id="story" name="${type.name()}" rows="3"
-                                  cols="60"> ${organization}</textarea>
+
+                        <input type="text" name="URL" placeholder="Организация" size="30"
+                               value="${organization.getHomePage().getName()}"><br>
+                        <input type="text" name="URL" placeholder="URL" size="30"
+                               value="${organization.getHomePage().getUrl()}"><br>
+                        <c:forEach var="position" items="${organization.getPositions()}">
+                            <ul>
+                                <li>
+                                    <input type="text" name="URL" placeholder="Начало" size="30"
+                                           value="${position.getStartDate()}">
+                                    <input type="text" name="name" placeholder="Окончание" size="30"
+                                           value="${position.getEndDate()}"><br>
+                                    <input type="text" name="Position" placeholder="Должность" size="30"
+                                           value="${position.getTitle()}"><br>
+                                    <textarea name="Description" rows="3"
+                                              cols="60"> ${position.getDescription()}</textarea>
+                                </li>
+                            </ul>
+                        </c:forEach>
+
+
+                        <%--                        <textarea id="story" name="${type.name()}" rows="3" cols="60"> ${organization}</textarea>--%>
                         <p></p>
                     </c:forEach>
                 </c:when>
