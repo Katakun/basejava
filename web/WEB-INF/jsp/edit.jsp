@@ -16,13 +16,13 @@
     <form method="post" action="resume" enctype="application/x-www-form-urlencoded">
         <input type="hidden" name="uuid" value="${resume.uuid}">
 
-<%--        Имя--%>
+        <%--        Имя--%>
         <dl>
             <dt>Имя:</dt>
             <dd><input type="text" name="fullName" size="50" value="${resume.fullName}"></dd>
         </dl>
 
-<%--        Котакты--%>
+        <%--        Котакты--%>
         <h3>Контакты:</h3>
         <c:forEach var="type" items="<%=ContactType.values()%>">
             <dl>
@@ -31,13 +31,41 @@
             </dl>
         </c:forEach>
 
-<%--        Секции--%>
+        <%--        Секции--%>
         <h3>Секции:</h3>
         <c:forEach var="type" items="<%=SectionType.values()%>">
-            <dl>
-                <dt>${type.title}</dt>
-                <dd><input type="text" name="${type.name()}" size="30" value="${resume.getSection(type)}"></dd>
-            </dl>
+            <c:choose>
+
+                <%--                TextSection--%>
+                <c:when test="${type==SectionType.PERSONAL || type==SectionType.OBJECTIVE}">
+                    <dl>
+                        <dt>${type.title}</dt>
+                        <dd><input type="text" name="${type.name()}" size="30" value="${resume.getSection(type)}"></dd>
+                    </dl>
+                </c:when>
+
+                <%--                ListSection--%>
+                <c:when test="${type==SectionType.ACHIEVEMENT || type==SectionType.QUALIFICATIONS}">
+                    <h4>${type.title}</h4>
+                    <c:forEach var="item" items="${resume.getSection(type).getItems()}">
+                        <textarea id="story" name="${type.name()}" rows="3"
+                                  cols="60"> ${item}</textarea>
+                        <p></p>
+                    </c:forEach>
+                </c:when>
+
+<%--                OrganizatonSection--%>
+                <c:when test="${type==SectionType.EXPERIENCE || type==SectionType.EDUCATION}">
+                    <h4>${type.title}</h4>
+                    <c:forEach var="organization" items="${resume.getSection(type).getOrganizations()}">
+                        <textarea id="story" name="${type.name()}" rows="3"
+                                  cols="60"> ${organization}</textarea>
+                        <p></p>
+                    </c:forEach>
+                </c:when>
+
+            </c:choose>
+
         </c:forEach>
 
         <hr>
