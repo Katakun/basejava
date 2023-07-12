@@ -17,6 +17,9 @@ public class ListSection extends Section {
     public ListSection() {
     }
 
+    public ListSection(String items) {
+        this(Arrays.asList(items.trim().split("\n")));
+    }
     public ListSection(String... items) {
         this(Arrays.asList(items));
     }
