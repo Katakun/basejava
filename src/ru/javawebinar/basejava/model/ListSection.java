@@ -30,6 +30,14 @@ public class ListSection extends Section {
         return items;
     }
 
+    public String getAllItemsAsString() {
+        StringBuilder sb = new StringBuilder();
+        for (String s : items) {
+            sb.append(s + "\n");
+        }
+        return sb.toString();
+    }
+
     @Override
     public String toString() {
         return items.toString();

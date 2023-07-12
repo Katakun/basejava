@@ -40,6 +40,7 @@ public class ResumeServlet extends HttpServlet {
                 r.getContacts().remove(type);
             }
         }
+
         for (SectionType type : SectionType.values()) {
             //    Personal                     PERSONAL
             String value = request.getParameter(type.name());

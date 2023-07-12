@@ -46,12 +46,10 @@
 
                 <%--                ListSection--%>
                 <c:when test="${type==SectionType.ACHIEVEMENT || type==SectionType.QUALIFICATIONS}">
-                    <h4>${type.title}</h4>
-                    <c:forEach var="item" items="${resume.getSection(type).getItems()}">
-                        <textarea id="story" name="${type.name()}" rows="3"
-                                  cols="60"> ${item}</textarea>
-                        <p></p>
-                    </c:forEach>
+                    <dt>${type.title}</dt>
+                    <br>
+                    <textarea id="" name="${type.name()}" rows="10" cols="100">${resume.getSection(type).getAllItemsAsString()}</textarea>
+                    <br>
                 </c:when>
 
                 <%--                OrganizatonSection--%>
