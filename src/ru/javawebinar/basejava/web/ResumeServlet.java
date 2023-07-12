@@ -32,6 +32,7 @@ public class ResumeServlet extends HttpServlet {
         String fullName = request.getParameter("fullName");
         Resume r = storage.get(uuid);
         r.setFullName(fullName);
+
         for (ContactType type : ContactType.values()) {
             String value = request.getParameter(type.name());
             if (value != null && value.trim().length() != 0) {
@@ -42,7 +43,6 @@ public class ResumeServlet extends HttpServlet {
         }
 
         for (SectionType type : SectionType.values()) {
-            //    Personal                     PERSONAL
             String value = request.getParameter(type.name());
             if (value != null && value.trim().length() != 0) {
                 Section section;

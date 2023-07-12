@@ -48,7 +48,8 @@
                 <c:when test="${type==SectionType.ACHIEVEMENT || type==SectionType.QUALIFICATIONS}">
                     <dt>${type.title}</dt>
                     <br>
-                    <textarea id="" name="${type.name()}" rows="10" cols="100">${resume.getSection(type).getAllItemsAsString()}</textarea>
+                    <textarea id="" name="${type.name()}" rows="10"
+                              cols="100">${resume.getSection(type).getAllItemsAsString()}</textarea>
                     <br>
                 </c:when>
 
@@ -57,35 +58,34 @@
                     <h4>${type.title}</h4>
                     <c:forEach var="organization" items="${resume.getSection(type).getOrganizations()}">
 
-                        <input type="text" name="URL" placeholder="Организация" size="30"
+                        <input type="text" name="URL" placeholder="Организация" size="60"
                                value="${organization.getHomePage().getName()}"><br>
-                        <input type="text" name="URL" placeholder="URL" size="30"
+                        <input type="text" name="URL" placeholder="URL" size="60"
                                value="${organization.getHomePage().getUrl()}"><br>
                         <c:forEach var="position" items="${organization.getPositions()}">
                             <ul>
                                 <li>
-                                    <input type="text" name="URL" placeholder="Начало" size="30"
+                                    <input type="date" name="start" placeholder="start" size="30"
                                            value="${position.getStartDate()}">
-                                    <input type="text" name="name" placeholder="Окончание" size="30"
+                                    <input type="date" name="finish" placeholder="finish" size="30"
                                            value="${position.getEndDate()}"><br>
+
                                     <input type="text" name="Position" placeholder="Должность" size="30"
                                            value="${position.getTitle()}"><br>
                                     <textarea name="Description" rows="3"
                                               cols="60"> ${position.getDescription()}</textarea>
                                 </li>
                             </ul>
+                            <br>
+                            <hr>
+                            <br>
                         </c:forEach>
-
-
                         <%--                        <textarea id="story" name="${type.name()}" rows="3" cols="60"> ${organization}</textarea>--%>
                         <p></p>
                     </c:forEach>
                 </c:when>
-
             </c:choose>
-
         </c:forEach>
-
         <hr>
         <button type="submit">Сохранить</button>
         <button onclick="window.history.back()">Отменить</button>
