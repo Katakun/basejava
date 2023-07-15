@@ -2,14 +2,15 @@ package ru.javawebinar.basejava.web;
 
 import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.model.ContactType;
+import ru.javawebinar.basejava.model.Link;
 import ru.javawebinar.basejava.model.ListSection;
+import ru.javawebinar.basejava.model.Organization;
 import ru.javawebinar.basejava.model.OrganizationSection;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.model.Section;
 import ru.javawebinar.basejava.model.SectionType;
 import ru.javawebinar.basejava.model.TextSection;
 import ru.javawebinar.basejava.storage.Storage;
-import ru.javawebinar.basejava.util.JsonParser;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -17,6 +18,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ResumeServlet extends HttpServlet {
     private Storage storage;
@@ -57,7 +61,31 @@ public class ResumeServlet extends HttpServlet {
                         break;
                     case "EXPERIENCE":
                     case "EDUCATION":
-                        section = JsonParser.read(value, OrganizationSection.class);
+                        List<Organization> orgList = new ArrayList<>();
+                        Integer countOrg = Integer.valueOf(request.getParameter(type.name() + "countOrg"));
+                        for (int i = 0; i < countOrg; i++) {
+                            String organization = request.getParameter(type.name() + i);
+                            String url = request.getParameter(type.name()+ i + "url");
+
+                            String countPosition = request.getParameter(
+                                    type.name() + i + "countPosition");
+                            countPosition = countPosition == null ? "0" :countPosition;
+                            List<Organization.Position> posList = new ArrayList<>();
+                            // Position
+                            for (int j = 0; j < Integer.valueOf(countPosition); j++) {
+                                String startDate = request.getParameter(type.name() + i + "startDate");
+                                String finishDate = request.getParameter(type.name()+ i + "finishDate");
+                                String position = request.getParameter(type.name() + i + "position");
+                                String description = request.getParameter(type.name() + i +"description");
+
+                                posList.add(new Organization.Position(
+                                        3333, Month.MARCH, 5555, Month.JANUARY,
+                                        position, description));
+                            }
+                            Organization org = new Organization(new Link(organization, url), posList);
+                            orgList.add(org);
+                        }
+                        section = new OrganizationSection(orgList);
                         break;
                     default:
                         throw new IllegalArgumentException("Wrong section type");

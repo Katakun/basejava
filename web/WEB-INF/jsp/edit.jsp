@@ -56,31 +56,44 @@
                 <%--                OrganizatonSection--%>
                 <c:when test="${type==SectionType.EXPERIENCE || type==SectionType.EDUCATION}">
                     <h4>${type.title}</h4>
-                    <c:forEach var="organization" items="${resume.getSection(type).getOrganizations()}">
 
-                        <input type="text" name="URL" placeholder="Организация" size="60"
+                    <input type="hidden" name="${type.name()}" value="${resume.getSection(type)}">
+                    <input type="hidden" name="${type}countOrg"
+                           value="${resume.getSection(type).getOrganizations().size()}">
+
+                    <c:forEach var="organization"
+                               items="${resume.getSection(type).getOrganizations()}" varStatus="orgIndex">
+                        <input type="text" name="${type}${orgIndex.index}" placeholder="Организация" size="60"
                                value="${organization.getHomePage().getName()}"><br>
-                        <input type="text" name="URL" placeholder="URL" size="60"
+                        <input type="text" name="${type}${orgIndex.index}url" placeholder="URL" size="60"
                                value="${organization.getHomePage().getUrl()}"><br>
+
                         <c:forEach var="position" items="${organization.getPositions()}">
+                            <input type="hidden"
+                                   name="${type}${orgIndex.index}countPosition"
+                                   value="${organization.getPositions().size()}">
                             <ul>
                                 <li>
-                                    <input type="date" name="start" placeholder="start" size="30"
+                                    <input type="date"
+                                           name="${type}${orgIndex.index}startDate"
+                                           placeholder="start" size="30"
                                            value="${position.getStartDate()}">
-                                    <input type="date" name="finish" placeholder="finish" size="30"
+                                    <input type="date"
+                                           name="${type}${orgIndex.index}finishDate"
+                                           placeholder="finish" size="30"
                                            value="${position.getEndDate()}"><br>
-
-                                    <input type="text" name="Position" placeholder="Должность" size="30"
+                                    <input type="text"
+                                           name="${type}${orgIndex.index}position"
+                                           placeholder="Должность" size="30"
                                            value="${position.getTitle()}"><br>
-                                    <textarea name="Description" rows="3"
-                                              cols="60"> ${position.getDescription()}</textarea>
+                                    <textarea name="${type}${orgIndex.index}description"
+                                              rows="3" cols="60"> ${position.getDescription()}</textarea>
                                 </li>
                             </ul>
                             <br>
                             <hr>
                             <br>
                         </c:forEach>
-                        <%--                        <textarea id="story" name="${type.name()}" rows="3" cols="60"> ${organization}</textarea>--%>
                         <p></p>
                     </c:forEach>
                 </c:when>
