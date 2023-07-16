@@ -73,10 +73,10 @@ public class ResumeServlet extends HttpServlet {
                             List<Organization.Position> posList = new ArrayList<>();
                             // Position
                             for (int j = 0; j < Integer.valueOf(countPosition); j++) {
-                                String startDate = request.getParameter(type.name() + i + "startDate");
-                                String finishDate = request.getParameter(type.name()+ i + "finishDate");
-                                String position = request.getParameter(type.name() + i + "position");
-                                String description = request.getParameter(type.name() + i +"description");
+                                String startDate = request.getParameter(type.name() + i + j + "startDate");
+                                String finishDate = request.getParameter(type.name()+ i + j + "finishDate");
+                                String position = request.getParameter(type.name() + i + j + "position");
+                                String description = request.getParameter(type.name() + i + j +"description");
 
                                 posList.add(new Organization.Position(
                                         3333, Month.MARCH, 5555, Month.JANUARY,

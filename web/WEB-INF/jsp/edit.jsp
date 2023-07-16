@@ -68,25 +68,25 @@
                         <input type="text" name="${type}${orgIndex.index}url" placeholder="URL" size="60"
                                value="${organization.getHomePage().getUrl()}"><br>
 
-                        <c:forEach var="position" items="${organization.getPositions()}">
+                        <c:forEach var="position" items="${organization.getPositions()}" varStatus="posIndex">
                             <input type="hidden"
                                    name="${type}${orgIndex.index}countPosition"
                                    value="${organization.getPositions().size()}">
                             <ul>
                                 <li>
                                     <input type="date"
-                                           name="${type}${orgIndex.index}startDate"
+                                           name="${type}${orgIndex.index}${posIndex.index}startDate"
                                            placeholder="start" size="30"
                                            value="${position.getStartDate()}">
                                     <input type="date"
-                                           name="${type}${orgIndex.index}finishDate"
+                                           name="${type}${orgIndex.index}${posIndex.index}finishDate"
                                            placeholder="finish" size="30"
                                            value="${position.getEndDate()}"><br>
                                     <input type="text"
-                                           name="${type}${orgIndex.index}position"
+                                           name="${type}${orgIndex.index}${posIndex.index}position"
                                            placeholder="Должность" size="30"
                                            value="${position.getTitle()}"><br>
-                                    <textarea name="${type}${orgIndex.index}description"
+                                    <textarea name="${type}${orgIndex.index}${posIndex.index}description"
                                               rows="3" cols="60"> ${position.getDescription()}</textarea>
                                 </li>
                             </ul>
