@@ -30,6 +30,7 @@ public class ResumeServlet extends HttpServlet {
         storage = Config.get().getStorage();
     }
 
+    // TODO add new resume
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String uuid = request.getParameter("uuid");
@@ -61,6 +62,7 @@ public class ResumeServlet extends HttpServlet {
                         break;
                     case "EXPERIENCE":
                     case "EDUCATION":
+                        // TODO add empty section
                         List<Organization> orgList = new ArrayList<>();
                         Integer countOrg = Integer.valueOf(request.getParameter(type.name() + "countOrg"));
                         for (int i = 0; i < countOrg; i++) {
@@ -72,14 +74,19 @@ public class ResumeServlet extends HttpServlet {
                             countPosition = countPosition == null ? "0" :countPosition;
                             List<Organization.Position> posList = new ArrayList<>();
                             // Position
+                            // TODO add empty position
                             for (int j = 0; j < Integer.valueOf(countPosition); j++) {
                                 String startDate = request.getParameter(type.name() + i + j + "startDate");
                                 String finishDate = request.getParameter(type.name()+ i + j + "finishDate");
                                 String position = request.getParameter(type.name() + i + j + "position");
                                 String description = request.getParameter(type.name() + i + j +"description");
 
+                                int startYear = Integer.valueOf(startDate.split("-")[0]);
+                                int endYear = Integer.valueOf(finishDate.split("-")[0]);
+                                Month startMonth = Month.of(Integer.valueOf(startDate.split("-")[1]));
+                                Month endMonth = Month.of(Integer.valueOf(startDate.split("-")[1]));
                                 posList.add(new Organization.Position(
-                                        3333, Month.MARCH, 5555, Month.JANUARY,
+                                        startYear, startMonth, endYear, endMonth,
                                         position, description));
                             }
                             Organization org = new Organization(new Link(organization, url), posList);
