@@ -1,4 +1,5 @@
 <%@ page import="ru.javawebinar.basejava.model.SectionType" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -57,7 +58,8 @@
                 <c:forEach var="position" items="${organization.getPositions()}">
                     <ul>
                         <li>
-                                ${position.getStartDate()} - ${position.getEndDate()}<br>
+                                ${position.getStartDate().format(DateTimeFormatter.ofPattern("MM/yyyy"))}
+                            - ${position.getEndDate().format(DateTimeFormatter.ofPattern("MM/yyyy"))}<br>
                                 ${position.getTitle()}<br>
                                 ${position.getDescription()}<br>
                         </li>

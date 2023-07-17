@@ -1,5 +1,6 @@
 <%@ page import="ru.javawebinar.basejava.model.ContactType" %>
 <%@ page import="ru.javawebinar.basejava.model.SectionType" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -74,14 +75,13 @@
                                    value="${organization.getPositions().size()}">
                             <ul>
                                 <li>
-                                    <input type="date"
+                                    <input type="month"
                                            name="${type}${orgIndex.index}${posIndex.index}startDate"
-                                           placeholder="start" size="30"
-                                           value="${position.getStartDate()}">
-                                    <input type="date"
+                                           value="${position.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))}">
+                                    <input type="month"
                                            name="${type}${orgIndex.index}${posIndex.index}finishDate"
                                            placeholder="finish" size="30"
-                                           value="${position.getEndDate()}"><br>
+                                           value="${position.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))}"><br>
                                     <input type="text"
                                            name="${type}${orgIndex.index}${posIndex.index}position"
                                            placeholder="Должность" size="30"
