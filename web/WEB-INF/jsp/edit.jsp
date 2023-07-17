@@ -69,12 +69,11 @@
                                value="${organization.getHomePage().getName()}"><br>
                         <input type="text" name="${type}${orgIndex.index}url" placeholder="URL" size="60"
                                value="${organization.getHomePage().getUrl()}"><br>
-
-                        <c:forEach var="position" items="${organization.getPositions()}" varStatus="posIndex">
-                            <input type="hidden"
-                                   name="${type}${orgIndex.index}countPosition"
-                                   value="${organization.getPositions().size()}">
-                            <ul>
+                        <ul>
+                            <c:forEach var="position" items="${organization.getPositions()}" varStatus="posIndex">
+                                <input type="hidden"
+                                       name="${type}${orgIndex.index}countPosition"
+                                       value="${organization.getPositions().size()}">
                                 <li>
                                     <input type="month"
                                            name="${type}${orgIndex.index}${posIndex.index}startDate"
@@ -88,13 +87,28 @@
                                            placeholder="Должность" size="30"
                                            value="${position.getTitle()}"><br>
                                     <textarea name="${type}${orgIndex.index}${posIndex.index}description"
-                                              rows="3" cols="60"> ${position.getDescription()}</textarea>
+                                              placeholder="Описание" rows="3" cols="60">
+                                            ${position.getDescription()}</textarea>
                                 </li>
-                            </ul>
-                            <br>
-                            <hr>
-                            <br>
-                        </c:forEach>
+                            </c:forEach>
+                            <p>New position</p>
+                            <li>
+                                <input type="month"
+                                       name="${type}${orgIndex.index}newPosStartDate"
+                                       value="${position.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))}">
+                                <input type="month"
+                                       name="${type}${orgIndex.index}newPosfinishDate"
+                                       placeholder="finish" size="30"
+                                       value="${position.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))}"><br>
+                                <input type="text"
+                                       name="${type}${orgIndex.index}newPosPosition"
+                                       placeholder="Должность" size="30"
+                                       value="${position.getTitle()}"><br>
+                                <textarea name="${type}${orgIndex.index}newPosDescription"
+                                          placeholder="Описание" rows="3" cols="60">
+                                        ${position.getDescription()}</textarea>
+                            </li>
+                        </ul>
                         <p></p>
                     </c:forEach>
                 </c:when>
