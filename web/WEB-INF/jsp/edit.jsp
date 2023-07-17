@@ -62,6 +62,7 @@
                     <input type="hidden" name="${type}countOrg"
                            value="${resume.getSection(type).getOrganizations().size()}">
 
+                    <% DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy"); %>
                     <c:forEach var="organization"
                                items="${resume.getSection(type).getOrganizations()}" varStatus="orgIndex">
                         <input type="text" name="${type}${orgIndex.index}" placeholder="Организация" size="60"
