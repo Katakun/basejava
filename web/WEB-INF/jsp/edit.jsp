@@ -63,8 +63,9 @@
                            value="${resume.getSection(type).getOrganizations().size()}">
 
                     <% DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy"); %>
-                    <c:forEach var="organization"
-                               items="${resume.getSection(type).getOrganizations()}" varStatus="orgIndex">
+
+                    <c:forEach var="organization" items="${resume.getSection(type).getOrganizations()}"
+                               varStatus="orgIndex">
                         <input type="text" name="${type}${orgIndex.index}" placeholder="Организация" size="60"
                                value="${organization.getHomePage().getName()}"><br>
                         <input type="text" name="${type}${orgIndex.index}url" placeholder="URL" size="60"
@@ -75,42 +76,44 @@
                                        name="${type}${orgIndex.index}countPosition"
                                        value="${organization.getPositions().size()}">
                                 <li>
-                                    <input type="month"
-                                           name="${type}${orgIndex.index}${posIndex.index}startDate"
+                                    <input type="month" name="${type}${orgIndex.index}${posIndex.index}startDate"
                                            value="${position.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))}">
-                                    <input type="month"
-                                           name="${type}${orgIndex.index}${posIndex.index}finishDate"
+                                    <input type="month" name="${type}${orgIndex.index}${posIndex.index}finishDate"
                                            placeholder="finish" size="30"
                                            value="${position.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))}"><br>
-                                    <input type="text"
-                                           name="${type}${orgIndex.index}${posIndex.index}position"
-                                           placeholder="Должность" size="30"
-                                           value="${position.getTitle()}"><br>
+                                    <input type="text" name="${type}${orgIndex.index}${posIndex.index}position"
+                                           placeholder="Должность" size="30" value="${position.getTitle()}"><br>
                                     <textarea name="${type}${orgIndex.index}${posIndex.index}description"
-                                              placeholder="Описание" rows="3" cols="60">
-                                            ${position.getDescription()}</textarea>
+                                              placeholder="Описание" rows="3"
+                                              cols="60"> ${position.getDescription()}</textarea>
                                 </li>
                             </c:forEach>
                             <p>New position</p>
                             <li>
-                                <input type="month"
-                                       name="${type}${orgIndex.index}newPosStartDate"
+                                <input type="month" name="${type}${orgIndex.index}newPosStartDate"
                                        value="${position.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))}">
-                                <input type="month"
-                                       name="${type}${orgIndex.index}newPosfinishDate"
+                                <input type="month" name="${type}${orgIndex.index}newPosfinishDate"
                                        placeholder="finish" size="30"
                                        value="${position.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))}"><br>
-                                <input type="text"
-                                       name="${type}${orgIndex.index}newPosPosition"
-                                       placeholder="Должность" size="30"
+                                <input type="text" name="${type}${orgIndex.index}newPosPosition"
+                                       placeholder="Позиция" size="30"
                                        value="${position.getTitle()}"><br>
-                                <textarea name="${type}${orgIndex.index}newPosDescription"
-                                          placeholder="Описание" rows="3" cols="60">
-                                        ${position.getDescription()}</textarea>
+                                <textarea name="${type}${orgIndex.index}newPosDescription" placeholder="Описание"
+                                          rows="3" cols="60"> ${position.getDescription()}</textarea>
                             </li>
                         </ul>
                         <p></p>
                     </c:forEach>
+
+                    <%--New organazation--%>
+                    <p>New organization</p>
+                    <input type="text" name="${type}newOrg" placeholder="Организация" size="60"><br>
+                    <input type="text" name="${type}newOrgUrl" placeholder="URL" size="60"><br>
+                    <input type="month" name="${type}newOrgStartDate">
+                    <input type="month" name="${type}newOrgFinishDate"><br>
+                    <input type="text" name="${type}newOrgPosition" placeholder="Позиция" size="30"><br>
+                    <textarea name="${type}newOrgDescription" placeholder="Описание" rows="3" cols="60"> </textarea>
+
                 </c:when>
             </c:choose>
         </c:forEach>

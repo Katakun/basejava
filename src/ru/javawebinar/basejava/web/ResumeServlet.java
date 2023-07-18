@@ -74,7 +74,6 @@ public class ResumeServlet extends HttpServlet {
                             countPosition = countPosition == null ? "0" : countPosition;
                             List<Organization.Position> posList = new ArrayList<>();
                             // Position
-                            // TODO add empty position
                             for (int j = 0; j < Integer.valueOf(countPosition); j++) {
                                 String startDate = request.getParameter(type.name() + i + j + "startDate");
                                 String finishDate = request.getParameter(type.name() + i + j + "finishDate");
@@ -84,7 +83,7 @@ public class ResumeServlet extends HttpServlet {
                                 int startYear = Integer.valueOf(startDate.split("-")[0]);
                                 int endYear = Integer.valueOf(finishDate.split("-")[0]);
                                 Month startMonth = Month.of(Integer.valueOf(startDate.split("-")[1]));
-                                Month endMonth = Month.of(Integer.valueOf(startDate.split("-")[1]));
+                                Month endMonth = Month.of(Integer.valueOf(finishDate.split("-")[1]));
                                 posList.add(new Organization.Position(
                                         startYear, startMonth, endYear, endMonth,
                                         position, description));
@@ -106,6 +105,25 @@ public class ResumeServlet extends HttpServlet {
                                         position, description));
                             }
                             Organization org = new Organization(new Link(organization, url), posList);
+                            orgList.add(org);
+                        }
+                        // New Organization
+                        if (request.getParameter(type.name() + "newOrg").length() > 0) {
+                            String organization = request.getParameter(type.name() + "newOrg");
+                            String url = request.getParameter(type.name() + "newOrgUrl");
+                            String startDate = request.getParameter(type.name() + "newOrgStartDate");
+                            String finishDate = request.getParameter(type.name() + "newOrgFinishDate");
+                            String position = request.getParameter(type.name() + "newOrgPosition");
+                            String description = request.getParameter(type.name() + "newOrgDescription");
+
+                            int startYear = Integer.valueOf(startDate.split("-")[0]);
+                            int endYear = Integer.valueOf(finishDate.split("-")[0]);
+                            Month startMonth = Month.of(Integer.valueOf(startDate.split("-")[1]));
+                            Month endMonth = Month.of(Integer.valueOf(finishDate.split("-")[1]));
+
+                            Organization.Position pos = new Organization.Position(
+                                    startYear, startMonth, endYear, endMonth, position, description);
+                            Organization org = new Organization(organization, url, pos);
                             orgList.add(org);
                         }
                         section = new OrganizationSection(orgList);
