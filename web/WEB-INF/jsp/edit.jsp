@@ -104,7 +104,6 @@
                         </ul>
                         <p></p>
                     </c:forEach>
-
                     <%--New organazation--%>
                     <p>New organization</p>
                     <input type="text" name="${type}newOrg" placeholder="Организация" size="60"><br>
@@ -112,8 +111,7 @@
                     <input type="month" name="${type}newOrgStartDate">
                     <input type="month" name="${type}newOrgFinishDate"><br>
                     <input type="text" name="${type}newOrgPosition" placeholder="Позиция" size="30"><br>
-                    <textarea name="${type}newOrgDescription" placeholder="Описание" rows="3" cols="60"> </textarea>
-
+                    <textarea name="${type}newOrgDescription" placeholder="Описание" rows="3" cols="60"></textarea>
                 </c:when>
             </c:choose>
         </c:forEach>

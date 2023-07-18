@@ -49,6 +49,7 @@ public class ResumeServlet extends HttpServlet {
 
         for (SectionType type : SectionType.values()) {
             String value = request.getParameter(type.name());
+            // TODO add new section
             if (value != null && value.trim().length() != 0) {
                 Section section;
                 switch (type.name()) {
@@ -62,7 +63,6 @@ public class ResumeServlet extends HttpServlet {
                         break;
                     case "EXPERIENCE":
                     case "EDUCATION":
-                        // TODO add empty section
                         List<Organization> orgList = new ArrayList<>();
                         Integer countOrg = Integer.valueOf(request.getParameter(type.name() + "countOrg"));
                         for (int i = 0; i < countOrg; i++) {
@@ -107,31 +107,29 @@ public class ResumeServlet extends HttpServlet {
                             Organization org = new Organization(new Link(organization, url), posList);
                             orgList.add(org);
                         }
-                        // New Organization
-                        if (request.getParameter(type.name() + "newOrg").length() > 0) {
-                            String organization = request.getParameter(type.name() + "newOrg");
-                            String url = request.getParameter(type.name() + "newOrgUrl");
-                            String startDate = request.getParameter(type.name() + "newOrgStartDate");
-                            String finishDate = request.getParameter(type.name() + "newOrgFinishDate");
-                            String position = request.getParameter(type.name() + "newOrgPosition");
-                            String description = request.getParameter(type.name() + "newOrgDescription");
-
-                            int startYear = Integer.valueOf(startDate.split("-")[0]);
-                            int endYear = Integer.valueOf(finishDate.split("-")[0]);
-                            Month startMonth = Month.of(Integer.valueOf(startDate.split("-")[1]));
-                            Month endMonth = Month.of(Integer.valueOf(finishDate.split("-")[1]));
-
-                            Organization.Position pos = new Organization.Position(
-                                    startYear, startMonth, endYear, endMonth, position, description);
-                            Organization org = new Organization(organization, url, pos);
-                            orgList.add(org);
-                        }
                         section = new OrganizationSection(orgList);
                         break;
                     default:
                         throw new IllegalArgumentException("Wrong section type");
                 }
                 r.addSection(type, section);
+                // New Organization
+            } else if (request.getParameter(type.name() + "newOrg") != null &&
+                    request.getParameter(type.name() + "newOrg").length() > 0) {
+                String organization = request.getParameter(type.name() + "newOrg");
+                String url = request.getParameter(type.name() + "newOrgUrl");
+                String startDate = request.getParameter(type.name() + "newOrgStartDate");
+                String finishDate = request.getParameter(type.name() + "newOrgFinishDate");
+                String position = request.getParameter(type.name() + "newOrgPosition");
+                String description = request.getParameter(type.name() + "newOrgDescription");
+                int startYear = Integer.valueOf(startDate.split("-")[0]);
+                int endYear = Integer.valueOf(finishDate.split("-")[0]);
+                Month startMonth = Month.of(Integer.valueOf(startDate.split("-")[1]));
+                Month endMonth = Month.of(Integer.valueOf(finishDate.split("-")[1]));
+                Organization.Position pos = new Organization.Position(
+                        startYear, startMonth, endYear, endMonth, position, description);
+                Organization org = new Organization(organization, url, pos);
+                r.addSection(type, new OrganizationSection(org));
             } else {
                 r.getSections().remove(type);
             }
