@@ -88,8 +88,10 @@ public class ResumeServlet extends HttpServlet {
                                     posList.add(new Organization.Position(startDate, finishDate, position, description));
                                 }
                             }
-                            Organization org = new Organization(new Link(organization, url), posList);
-                            orgList.add(org);
+                            if (!organization.isEmpty()) {
+                                Organization org = new Organization(new Link(organization, url), posList);
+                                orgList.add(org);
+                            }
                         }
                         Organization newOrg = getOrganization(request, type);
                         if (newOrg != null) {
@@ -106,8 +108,6 @@ public class ResumeServlet extends HttpServlet {
                 r.addSection(type, new OrganizationSection(getOrganization(request, type)));
             } else {
                 // TODO remove section
-                // TODO remove organization
-                // TODO remove position
                 r.getSections().remove(type);
             }
         }
