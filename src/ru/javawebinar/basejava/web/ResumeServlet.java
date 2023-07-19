@@ -53,71 +53,66 @@ public class ResumeServlet extends HttpServlet {
                 switch (type.name()) {
                     case "PERSONAL":
                     case "OBJECTIVE":
-                        section = new TextSection(value);
+                        section = new TextSection(value.trim());
                         break;
                     case "ACHIEVEMENT":
                     case "QUALIFICATIONS":
-                        section = new ListSection(value);
+                        section = new ListSection(value.trim());
                         break;
                     case "EXPERIENCE":
                     case "EDUCATION":
                         List<Organization> orgList = new ArrayList<>();
                         int countOrg = Integer.parseInt(request.getParameter(type.name() + "countOrg"));
                         for (int i = 0; i < countOrg; i++) {
-                            String organization = request.getParameter(type.name() + i);
-                            String url = request.getParameter(type.name() + i + "url");
+                            String organization = request.getParameter(type.name() + i).trim();
+                            String url = request.getParameter(type.name() + i + "url").trim();
                             String countPosition = request.getParameter(type.name() + i + "countPosition");
                             List<Organization.Position> posList = new ArrayList<>();
                             if (countPosition != null) {
                                 for (int j = 0; j < Integer.parseInt(countPosition); j++) {
                                     String startDate = request.getParameter(type.name() + i + j + "startDate");
                                     String finishDate = request.getParameter(type.name() + i + j + "finishDate");
-                                    String position = request.getParameter(type.name() + i + j + "position");
-                                    String description = request.getParameter(type.name() + i + j + "description");
-                                    posList.add(new Organization.Position(startDate, finishDate, position, description));
+                                    String position = request.getParameter(type.name() + i + j + "position").trim();
+                                    String description = request.getParameter(type.name() + i + j + "description").trim();
+                                    if (!position.isEmpty()) {
+                                        posList.add(new Organization.Position(startDate, finishDate, position, description));
+                                    }
                                 }
                             }
                             if (request.getParameter(type.name() + i + "newPosPosition").length() > 0) {
                                 String startDate = request.getParameter(type.name() + i + "newPosStartDate");
-                                String finishDate = request.getParameter(type.name() + i + "newPosfinishDate");
-                                String position = request.getParameter(type.name() + i + "newPosPosition");
-                                String description = request.getParameter(type.name() + i + "newPosDescription");
-                                posList.add(new Organization.Position(startDate, finishDate, position, description));
+                                String finishDate = request.getParameter(type.name() + i + "newPosFinishDate");
+                                String position = request.getParameter(type.name() + i + "newPosPosition").trim();
+                                String description = request.getParameter(type.name() + i + "newPosDescription").trim();
+                                if (!position.isEmpty()) {
+                                    posList.add(new Organization.Position(startDate, finishDate, position, description));
+                                }
                             }
                             Organization org = new Organization(new Link(organization, url), posList);
                             orgList.add(org);
                         }
-                        orgList.add(getOrganization(request, type));
+                        Organization newOrg = getOrganization(request, type);
+                        if (newOrg != null) {
+                            orgList.add(newOrg);
+                        }
                         section = new OrganizationSection(orgList);
                         break;
                     default:
                         throw new IllegalArgumentException("Wrong section type");
                 }
                 r.addSection(type, section);
-                // New Organization
             } else if (request.getParameter(type.name() + "newOrg") != null &&
                     request.getParameter(type.name() + "newOrg").length() > 0) {
                 r.addSection(type, new OrganizationSection(getOrganization(request, type)));
             } else {
+                // TODO remove section
+                // TODO remove organization
+                // TODO remove position
                 r.getSections().remove(type);
             }
         }
         storage.update(r);
         response.sendRedirect("resume");
-    }
-
-    private Organization getOrganization(HttpServletRequest request, SectionType type) {
-        String organization = request.getParameter(type.name() + "newOrg");
-        if (organization.trim().length() > 0) {
-            String url = request.getParameter(type.name() + "newOrgUrl");
-            String startDate = request.getParameter(type.name() + "newOrgStartDate");
-            String finishDate = request.getParameter(type.name() + "newOrgFinishDate");
-            String position = request.getParameter(type.name() + "newOrgPosition");
-            String description = request.getParameter(type.name() + "newOrgDescription");
-            Organization.Position pos = new Organization.Position(startDate, finishDate, position, description);
-            return new Organization(organization, url, pos);
-        }
-        return null;
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
@@ -146,5 +141,19 @@ public class ResumeServlet extends HttpServlet {
                 ("view".equals(action) ?
                         "/WEB-INF/jsp/view.jsp" : "/WEB-INF/jsp/edit.jsp")
         ).forward(request, response);
+    }
+
+    private Organization getOrganization(HttpServletRequest request, SectionType type) {
+        String organization = request.getParameter(type.name() + "newOrg").trim();
+        if (organization.trim().length() > 0) {
+            String url = request.getParameter(type.name() + "newOrgUrl").trim();
+            String startDate = request.getParameter(type.name() + "newOrgStartDate");
+            String finishDate = request.getParameter(type.name() + "newOrgFinishDate");
+            String position = request.getParameter(type.name() + "newOrgPosition").trim();
+            String description = request.getParameter(type.name() + "newOrgDescription").trim();
+            Organization.Position pos = new Organization.Position(startDate, finishDate, position, description);
+            return new Organization(organization, url, pos);
+        }
+        return null;
     }
 }

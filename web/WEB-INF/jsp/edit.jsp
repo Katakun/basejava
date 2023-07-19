@@ -85,14 +85,14 @@
                                            placeholder="Должность" size="30" value="${position.getTitle()}"><br>
                                     <textarea name="${type}${orgIndex.index}${posIndex.index}description"
                                               placeholder="Описание" rows="3"
-                                              cols="60"> ${position.getDescription()}</textarea>
+                                              cols="60">${position.getDescription()}</textarea>
                                 </li>
                             </c:forEach>
                             <p>New position</p>
                             <li>
                                 <input type="month" name="${type}${orgIndex.index}newPosStartDate"
                                        value="${position.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))}">
-                                <input type="month" name="${type}${orgIndex.index}newPosfinishDate"
+                                <input type="month" name="${type}${orgIndex.index}newPosFinishDate"
                                        placeholder="finish" size="30"
                                        value="${position.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))}"><br>
                                 <input type="text" name="${type}${orgIndex.index}newPosPosition"

@@ -3,6 +3,7 @@ package ru.javawebinar.basejava.model;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * gkislin
@@ -18,8 +19,11 @@ public class ListSection extends Section {
     }
 
     public ListSection(String items) {
-        this(Arrays.asList(items.trim().split("\n")));
+        this(Arrays.stream(items.trim().split("\n"))
+                .map(s -> s.trim())
+                .collect(Collectors.toList()));
     }
+
     public ListSection(String... items) {
         this(Arrays.asList(items));
     }
