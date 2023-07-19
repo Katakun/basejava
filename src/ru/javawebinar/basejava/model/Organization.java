@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.model;
 
+import ru.javawebinar.basejava.util.DateUtil;
 import ru.javawebinar.basejava.util.LocalDateAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -80,6 +81,12 @@ public class Organization implements Serializable {
 
         public Position(int startYear, Month startMonth, int endYear, Month endMonth, String title, String description) {
             this(of(startYear, startMonth), of(endYear, endMonth), title, description);
+        }
+
+        public Position(String startDate, String finishDate, String title, String description) {
+            this(of(DateUtil.getYear(startDate), DateUtil.getMonth(startDate)),
+                    of(DateUtil.getYear(finishDate), DateUtil.getMonth(startDate)),
+                    title, description);
         }
 
         public Position(LocalDate startDate, LocalDate endDate, String title, String description) {

@@ -11,7 +11,6 @@ import ru.javawebinar.basejava.model.Section;
 import ru.javawebinar.basejava.model.SectionType;
 import ru.javawebinar.basejava.model.TextSection;
 import ru.javawebinar.basejava.storage.Storage;
-import ru.javawebinar.basejava.util.DateUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -19,7 +18,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,13 +77,7 @@ public class ResumeServlet extends HttpServlet {
                                 String finishDate = request.getParameter(type.name() + i + j + "finishDate");
                                 String position = request.getParameter(type.name() + i + j + "position");
                                 String description = request.getParameter(type.name() + i + j + "description");
-                                int startYear = DateUtil.getYear(startDate);
-                                int endYear = DateUtil.getYear(finishDate);
-                                Month startMonth = DateUtil.getMonth(startDate);
-                                Month endMonth = DateUtil.getMonth(finishDate);
-                                posList.add(new Organization.Position(
-                                        startYear, startMonth, endYear, endMonth,
-                                        position, description));
+                                posList.add(new Organization.Position(startDate, finishDate, position, description));
                             }
                             // New position
                             if (request.getParameter(type.name() + i + "newPosPosition").length() > 0) {
@@ -93,13 +85,7 @@ public class ResumeServlet extends HttpServlet {
                                 String finishDate = request.getParameter(type.name() + i + "newPosfinishDate");
                                 String position = request.getParameter(type.name() + i + "newPosPosition");
                                 String description = request.getParameter(type.name() + i + "newPosDescription");
-                                int startYear = DateUtil.getYear(startDate);
-                                int endYear = DateUtil.getYear(finishDate);
-                                Month startMonth = DateUtil.getMonth(startDate);
-                                Month endMonth = DateUtil.getMonth(finishDate);
-                                posList.add(new Organization.Position(
-                                        startYear, startMonth, endYear, endMonth,
-                                        position, description));
+                                posList.add(new Organization.Position(startDate, finishDate, position, description));
                             }
                             Organization org = new Organization(new Link(organization, url), posList);
                             orgList.add(org);
@@ -119,12 +105,7 @@ public class ResumeServlet extends HttpServlet {
                 String finishDate = request.getParameter(type.name() + "newOrgFinishDate");
                 String position = request.getParameter(type.name() + "newOrgPosition");
                 String description = request.getParameter(type.name() + "newOrgDescription");
-                int startYear = DateUtil.getYear(startDate);
-                int endYear = DateUtil.getYear(finishDate);
-                Month startMonth = DateUtil.getMonth(startDate);
-                Month endMonth = DateUtil.getMonth(finishDate);
-                Organization.Position pos = new Organization.Position(
-                        startYear, startMonth, endYear, endMonth, position, description);
+                Organization.Position pos = new Organization.Position(startDate, finishDate, position, description);
                 Organization org = new Organization(organization, url, pos);
                 r.addSection(type, new OrganizationSection(org));
             } else {
