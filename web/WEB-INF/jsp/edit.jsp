@@ -104,7 +104,6 @@
                         </ul>
                         <p></p>
                     </c:forEach>
-                    <%--New organazation--%>
                     <p>New organization</p>
                     <input type="text" name="${type}newOrg" placeholder="Организация" size="60"><br>
                     <input type="text" name="${type}newOrgUrl" placeholder="URL" size="60"><br>

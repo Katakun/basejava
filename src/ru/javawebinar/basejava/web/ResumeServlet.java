@@ -62,24 +62,21 @@ public class ResumeServlet extends HttpServlet {
                     case "EXPERIENCE":
                     case "EDUCATION":
                         List<Organization> orgList = new ArrayList<>();
-                        Integer countOrg = Integer.valueOf(request.getParameter(type.name() + "countOrg"));
+                        int countOrg = Integer.parseInt(request.getParameter(type.name() + "countOrg"));
                         for (int i = 0; i < countOrg; i++) {
                             String organization = request.getParameter(type.name() + i);
                             String url = request.getParameter(type.name() + i + "url");
-
-                            String countPosition = request.getParameter(
-                                    type.name() + i + "countPosition");
-                            countPosition = countPosition == null ? "0" : countPosition;
+                            String countPosition = request.getParameter(type.name() + i + "countPosition");
                             List<Organization.Position> posList = new ArrayList<>();
-                            // Position
-                            for (int j = 0; j < Integer.valueOf(countPosition); j++) {
-                                String startDate = request.getParameter(type.name() + i + j + "startDate");
-                                String finishDate = request.getParameter(type.name() + i + j + "finishDate");
-                                String position = request.getParameter(type.name() + i + j + "position");
-                                String description = request.getParameter(type.name() + i + j + "description");
-                                posList.add(new Organization.Position(startDate, finishDate, position, description));
+                            if (countPosition != null) {
+                                for (int j = 0; j < Integer.parseInt(countPosition); j++) {
+                                    String startDate = request.getParameter(type.name() + i + j + "startDate");
+                                    String finishDate = request.getParameter(type.name() + i + j + "finishDate");
+                                    String position = request.getParameter(type.name() + i + j + "position");
+                                    String description = request.getParameter(type.name() + i + j + "description");
+                                    posList.add(new Organization.Position(startDate, finishDate, position, description));
+                                }
                             }
-                            // New position
                             if (request.getParameter(type.name() + i + "newPosPosition").length() > 0) {
                                 String startDate = request.getParameter(type.name() + i + "newPosStartDate");
                                 String finishDate = request.getParameter(type.name() + i + "newPosfinishDate");
@@ -90,6 +87,7 @@ public class ResumeServlet extends HttpServlet {
                             Organization org = new Organization(new Link(organization, url), posList);
                             orgList.add(org);
                         }
+                        orgList.add(getOrganization(request, type));
                         section = new OrganizationSection(orgList);
                         break;
                     default:
@@ -99,21 +97,27 @@ public class ResumeServlet extends HttpServlet {
                 // New Organization
             } else if (request.getParameter(type.name() + "newOrg") != null &&
                     request.getParameter(type.name() + "newOrg").length() > 0) {
-                String organization = request.getParameter(type.name() + "newOrg");
-                String url = request.getParameter(type.name() + "newOrgUrl");
-                String startDate = request.getParameter(type.name() + "newOrgStartDate");
-                String finishDate = request.getParameter(type.name() + "newOrgFinishDate");
-                String position = request.getParameter(type.name() + "newOrgPosition");
-                String description = request.getParameter(type.name() + "newOrgDescription");
-                Organization.Position pos = new Organization.Position(startDate, finishDate, position, description);
-                Organization org = new Organization(organization, url, pos);
-                r.addSection(type, new OrganizationSection(org));
+                r.addSection(type, new OrganizationSection(getOrganization(request, type)));
             } else {
                 r.getSections().remove(type);
             }
         }
         storage.update(r);
         response.sendRedirect("resume");
+    }
+
+    private Organization getOrganization(HttpServletRequest request, SectionType type) {
+        String organization = request.getParameter(type.name() + "newOrg");
+        if (organization.trim().length() > 0) {
+            String url = request.getParameter(type.name() + "newOrgUrl");
+            String startDate = request.getParameter(type.name() + "newOrgStartDate");
+            String finishDate = request.getParameter(type.name() + "newOrgFinishDate");
+            String position = request.getParameter(type.name() + "newOrgPosition");
+            String description = request.getParameter(type.name() + "newOrgDescription");
+            Organization.Position pos = new Organization.Position(startDate, finishDate, position, description);
+            return new Organization(organization, url, pos);
+        }
+        return null;
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
