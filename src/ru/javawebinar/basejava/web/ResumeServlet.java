@@ -11,6 +11,7 @@ import ru.javawebinar.basejava.model.Section;
 import ru.javawebinar.basejava.model.SectionType;
 import ru.javawebinar.basejava.model.TextSection;
 import ru.javawebinar.basejava.storage.Storage;
+import ru.javawebinar.basejava.util.DateUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -49,7 +50,6 @@ public class ResumeServlet extends HttpServlet {
 
         for (SectionType type : SectionType.values()) {
             String value = request.getParameter(type.name());
-            // TODO add new section
             if (value != null && value.trim().length() != 0) {
                 Section section;
                 switch (type.name()) {
@@ -79,15 +79,13 @@ public class ResumeServlet extends HttpServlet {
                                 String finishDate = request.getParameter(type.name() + i + j + "finishDate");
                                 String position = request.getParameter(type.name() + i + j + "position");
                                 String description = request.getParameter(type.name() + i + j + "description");
-
-                                int startYear = Integer.valueOf(startDate.split("-")[0]);
-                                int endYear = Integer.valueOf(finishDate.split("-")[0]);
-                                Month startMonth = Month.of(Integer.valueOf(startDate.split("-")[1]));
-                                Month endMonth = Month.of(Integer.valueOf(finishDate.split("-")[1]));
+                                int startYear = DateUtil.getYear(startDate);
+                                int endYear = DateUtil.getYear(finishDate);
+                                Month startMonth = DateUtil.getMonth(startDate);
+                                Month endMonth = DateUtil.getMonth(finishDate);
                                 posList.add(new Organization.Position(
                                         startYear, startMonth, endYear, endMonth,
                                         position, description));
-
                             }
                             // New position
                             if (request.getParameter(type.name() + i + "newPosPosition").length() > 0) {
@@ -95,11 +93,10 @@ public class ResumeServlet extends HttpServlet {
                                 String finishDate = request.getParameter(type.name() + i + "newPosfinishDate");
                                 String position = request.getParameter(type.name() + i + "newPosPosition");
                                 String description = request.getParameter(type.name() + i + "newPosDescription");
-
-                                int startYear = startDate.length() == 0 ? 0 : Integer.valueOf(startDate.split("-")[0]);
-                                int endYear = finishDate.length() == 0 ? 0 : Integer.valueOf(finishDate.split("-")[0]);
-                                Month startMonth = startDate.length() == 0 ? null : Month.of(Integer.valueOf(finishDate.split("-")[1]));
-                                Month endMonth = finishDate.length() == 0 ? null : Month.of(Integer.valueOf(finishDate.split("-")[1]));
+                                int startYear = DateUtil.getYear(startDate);
+                                int endYear = DateUtil.getYear(finishDate);
+                                Month startMonth = DateUtil.getMonth(startDate);
+                                Month endMonth = DateUtil.getMonth(finishDate);
                                 posList.add(new Organization.Position(
                                         startYear, startMonth, endYear, endMonth,
                                         position, description));
@@ -122,10 +119,10 @@ public class ResumeServlet extends HttpServlet {
                 String finishDate = request.getParameter(type.name() + "newOrgFinishDate");
                 String position = request.getParameter(type.name() + "newOrgPosition");
                 String description = request.getParameter(type.name() + "newOrgDescription");
-                int startYear = Integer.valueOf(startDate.split("-")[0]);
-                int endYear = Integer.valueOf(finishDate.split("-")[0]);
-                Month startMonth = Month.of(Integer.valueOf(startDate.split("-")[1]));
-                Month endMonth = Month.of(Integer.valueOf(finishDate.split("-")[1]));
+                int startYear = DateUtil.getYear(startDate);
+                int endYear = DateUtil.getYear(finishDate);
+                Month startMonth = DateUtil.getMonth(startDate);
+                Month endMonth = DateUtil.getMonth(finishDate);
                 Organization.Position pos = new Organization.Position(
                         startYear, startMonth, endYear, endMonth, position, description);
                 Organization org = new Organization(organization, url, pos);

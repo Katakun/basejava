@@ -99,7 +99,7 @@
                                        placeholder="Позиция" size="30"
                                        value="${position.getTitle()}"><br>
                                 <textarea name="${type}${orgIndex.index}newPosDescription" placeholder="Описание"
-                                          rows="3" cols="60"> ${position.getDescription()}</textarea>
+                                          rows="3" cols="60">${position.getDescription()}</textarea>
                             </li>
                         </ul>
                         <p></p>
