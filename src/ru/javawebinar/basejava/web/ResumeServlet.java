@@ -97,17 +97,23 @@ public class ResumeServlet extends HttpServlet {
                         if (newOrg != null) {
                             orgList.add(newOrg);
                         }
-                        section = new OrganizationSection(orgList);
+                        if (orgList.isEmpty()) {
+                            r.getSections().remove(type);
+                            section = null;
+                        } else {
+                            section = new OrganizationSection(orgList);
+                        }
                         break;
                     default:
                         throw new IllegalArgumentException("Wrong section type");
                 }
-                r.addSection(type, section);
+                if (section != null) {
+                    r.addSection(type, section);
+                }
             } else if (request.getParameter(type.name() + "newOrg") != null &&
                     request.getParameter(type.name() + "newOrg").length() > 0) {
                 r.addSection(type, new OrganizationSection(getOrganization(request, type)));
             } else {
-                // TODO remove section
                 r.getSections().remove(type);
             }
         }
