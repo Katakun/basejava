@@ -32,7 +32,7 @@ public class ResumeServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String uuid = request.getParameter("uuid");
-        String fullName = request.getParameter("fullName");
+        String fullName = request.getParameter("fullName").trim();
         Resume r = storage.get(uuid);
         r.setFullName(fullName);
 
@@ -117,7 +117,12 @@ public class ResumeServlet extends HttpServlet {
             }
         }
         storage.update(r);
-        response.sendRedirect("resume");
+        if (fullName.isEmpty()) {
+            request.setAttribute("resume", r);
+            request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp").forward(request, response);
+        } else {
+            response.sendRedirect("resume");
+        }
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
