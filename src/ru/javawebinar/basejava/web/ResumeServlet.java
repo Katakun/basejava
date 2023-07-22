@@ -40,8 +40,9 @@ public class ResumeServlet extends HttpServlet {
         } catch (NotExistStorageException e) {
             r = new Resume(uuid);
         }
-        r.setFullName(fullName);
-
+        if (!fullName.isEmpty()) {
+            r.setFullName(fullName);
+        }
         for (ContactType type : ContactType.values()) {
             String value = request.getParameter(type.name());
             if (value != null && value.trim().length() != 0) {
@@ -50,7 +51,6 @@ public class ResumeServlet extends HttpServlet {
                 r.getContacts().remove(type);
             }
         }
-
         for (SectionType type : SectionType.values()) {
             String value = request.getParameter(type.name());
             if (value != null && value.trim().length() != 0) {
@@ -127,8 +127,6 @@ public class ResumeServlet extends HttpServlet {
         } catch (NotExistStorageException e) {
             storage.save(r);
         }
-
-
         if (fullName.isEmpty()) {
             request.setAttribute("resume", r);
             request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp").forward(request, response);
