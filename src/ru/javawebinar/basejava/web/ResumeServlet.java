@@ -1,6 +1,7 @@
 package ru.javawebinar.basejava.web;
 
 import ru.javawebinar.basejava.Config;
+import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.ContactType;
 import ru.javawebinar.basejava.model.Link;
 import ru.javawebinar.basejava.model.ListSection;
@@ -31,9 +32,14 @@ public class ResumeServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        String uuid = request.getParameter("uuid");
+        String uuid = request.getParameter("uuid").trim();
         String fullName = request.getParameter("fullName").trim();
-        Resume r = storage.get(uuid);
+        Resume r;
+        try {
+            r = storage.get(uuid);
+        } catch (NotExistStorageException e) {
+            r = new Resume(uuid);
+        }
         r.setFullName(fullName);
 
         for (ContactType type : ContactType.values()) {
@@ -116,7 +122,13 @@ public class ResumeServlet extends HttpServlet {
                 r.getSections().remove(type);
             }
         }
-        storage.update(r);
+        try {
+            storage.update(r);
+        } catch (NotExistStorageException e) {
+            storage.save(r);
+        }
+
+
         if (fullName.isEmpty()) {
             request.setAttribute("resume", r);
             request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp").forward(request, response);
@@ -142,6 +154,9 @@ public class ResumeServlet extends HttpServlet {
             case "view":
             case "edit":
                 r = storage.get(uuid);
+                break;
+            case "add":
+                r = new Resume();
                 break;
             default:
                 throw new IllegalArgumentException("Action " + action + " is illegal");

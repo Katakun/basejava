@@ -28,6 +28,7 @@
             </tr>
         </c:forEach>
     </table>
+    <a href="resume?action=add"><img src="img/add.png">Добавить резюме</a>
 </section>
 </body>
 <jsp:include page="fragments/footer.jsp"/>

@@ -20,6 +20,7 @@ public class Resume implements Comparable<Resume>, Serializable {
     private String fullName;
 
     public Resume() {
+        uuid = UUID.randomUUID().toString();
     }
 
     public Resume(String fullName) {
