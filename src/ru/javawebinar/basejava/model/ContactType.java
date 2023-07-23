@@ -34,7 +34,12 @@ public enum ContactType {
             return "<a href=https://stackoverflow.com/" + value + ">" + value + "</a>";
         }
     },
-    HOME_PAGE("Домашняя страница");
+    HOME_PAGE("Домашняя страница") {
+        @Override
+        public String link(String value) {
+            return "<a href=https://" + value + ">" + value + "</a>";
+        }
+    };
 
     private final String title;
 
@@ -51,6 +56,6 @@ public enum ContactType {
     }
 
     public String toHtml(String value) {
-        return (value == null) ? "" : title + ": " +  link(value);
+        return (value == null) ? "" : title + ": " + link(value);
     }
 }
