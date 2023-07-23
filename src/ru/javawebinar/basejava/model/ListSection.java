@@ -21,6 +21,7 @@ public class ListSection extends Section {
     public ListSection(String items) {
         this(Arrays.stream(items.trim().split("\n"))
                 .map(s -> s.trim())
+                .filter(s -> !s.isEmpty())
                 .collect(Collectors.toList()));
     }
 
@@ -40,7 +41,9 @@ public class ListSection extends Section {
     public String getAllItemsAsString() {
         StringBuilder sb = new StringBuilder();
         for (String s : items) {
-            sb.append(s + "\n");
+            if (!s.trim().isEmpty()) {
+                sb.append(s).append("\n");
+            }
         }
         return sb.toString();
     }
