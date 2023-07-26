@@ -1,5 +1,7 @@
 <%@ page import="ru.javawebinar.basejava.model.SectionType" %>
+<%@ page import="ru.javawebinar.basejava.util.DateUtil" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="java.time.LocalDate" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -63,8 +65,24 @@
                 <c:forEach var="position" items="${organization.getPositions()}">
                     <ul>
                         <li>
+
+                            <c:if test="${DateUtil.isMonthNow(position.getStartDate())}">
+                                Сейчас
+                            </c:if>
+                            <c:if test="${!DateUtil.isMonthNow(position.getStartDate())}">
                                 ${position.getStartDate().format(DateTimeFormatter.ofPattern("MM/yyyy"))}
-                            - ${position.getEndDate().format(DateTimeFormatter.ofPattern("MM/yyyy"))}<br>
+                            </c:if>
+                            -
+                            <c:if test="${DateUtil.isMonthNow(position.getEndDate())}">
+                                Сейчас<br>
+                            </c:if>
+                            <c:if test="${!DateUtil.isMonthNow(position.getEndDate())}">
+                                ${position.getEndDate().format(DateTimeFormatter.ofPattern("MM/yyyy"))}
+                            </c:if><br>
+
+
+<%--                                ${position.getStartDate().format(DateTimeFormatter.ofPattern("MM/yyyy"))}--%>
+<%--                            - ${position.getEndDate().format(DateTimeFormatter.ofPattern("MM/yyyy"))}<br>--%>
                                 ${position.getTitle()}<br>
                                 ${position.getDescription()}<br>
                         </li>

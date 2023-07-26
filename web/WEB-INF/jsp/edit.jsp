@@ -79,7 +79,6 @@
                                     <input type="month" name="${type}${orgIndex.index}${posIndex.index}startDate"
                                            value="${position.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))}">
                                     <input type="month" name="${type}${orgIndex.index}${posIndex.index}finishDate"
-                                           placeholder="finish" size="30"
                                            value="${position.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))}"><br>
                                     <input type="text" name="${type}${orgIndex.index}${posIndex.index}position"
                                            placeholder="Должность" size="30" value="${position.getTitle()}"><br>

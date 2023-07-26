@@ -85,7 +85,7 @@ public class Organization implements Serializable {
 
         public Position(String startDate, String finishDate, String title, String description) {
             this(of(DateUtil.getYear(startDate), DateUtil.getMonth(startDate)),
-                    of(DateUtil.getYear(finishDate), DateUtil.getMonth(startDate)),
+                    of(DateUtil.getYear(finishDate), DateUtil.getMonth(finishDate)),
                     title, description);
         }
 

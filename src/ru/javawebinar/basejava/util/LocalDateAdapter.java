@@ -13,4 +13,5 @@ public class LocalDateAdapter extends XmlAdapter<String, LocalDate> {
     public String marshal(LocalDate ld) throws Exception {
         return ld.toString();
     }
+    // ${position.getStartDate().format(DateTimeFormatter.ofPattern("MM/yyyy"))}
 }
