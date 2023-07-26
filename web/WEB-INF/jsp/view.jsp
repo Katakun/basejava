@@ -56,16 +56,15 @@
         ${sectionEntry.key.title} <br>
         <ul>
             <c:forEach var="organization" items="${sectionEntry.value.getOrganizations()}">
-                <c:if test="${organization.getHomePage().getUrl()==''}">
+                <c:if test="${!organization.getHomePage().isUrlExist()}">
                     ${organization.getHomePage().getName()}
                 </c:if>
-                <c:if test="${organization.getHomePage().getUrl()!=''}">
+                <c:if test="${organization.getHomePage().isUrlExist()}">
                     <a href="${organization.getHomePage().getUrl()}">${organization.getHomePage().getName()}</a>
                 </c:if>
                 <c:forEach var="position" items="${organization.getPositions()}">
                     <ul>
                         <li>
-
                             <c:if test="${DateUtil.isMonthNow(position.getStartDate())}">
                                 Сейчас
                             </c:if>
@@ -79,10 +78,6 @@
                             <c:if test="${!DateUtil.isMonthNow(position.getEndDate())}">
                                 ${position.getEndDate().format(DateTimeFormatter.ofPattern("MM/yyyy"))}
                             </c:if><br>
-
-
-<%--                                ${position.getStartDate().format(DateTimeFormatter.ofPattern("MM/yyyy"))}--%>
-<%--                            - ${position.getEndDate().format(DateTimeFormatter.ofPattern("MM/yyyy"))}<br>--%>
                                 ${position.getTitle()}<br>
                                 ${position.getDescription()}<br>
                         </li>
