@@ -20,7 +20,7 @@
         <%--        Имя--%>
         <dl>
             <dt>Имя:</dt>
-            <dd><input type="text" name="fullName" size="50" value="${resume.fullName}"></dd>
+            <dd><input type="text" name="fullName" size="50" value="${resume.fullName}" required></dd>
         </dl>
 
         <%--        Котакты--%>

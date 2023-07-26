@@ -54,7 +54,12 @@
         ${sectionEntry.key.title} <br>
         <ul>
             <c:forEach var="organization" items="${sectionEntry.value.getOrganizations()}">
-                <a href="${organization.getHomePage().getUrl()}">${organization.getHomePage().getName()}</a>
+                <c:if test="${organization.getHomePage().getUrl()==''}">
+                    ${organization.getHomePage().getName()}
+                </c:if>
+                <c:if test="${organization.getHomePage().getUrl()!=''}">
+                    <a href="${organization.getHomePage().getUrl()}">${organization.getHomePage().getName()}</a>
+                </c:if>
                 <c:forEach var="position" items="${organization.getPositions()}">
                     <ul>
                         <li>

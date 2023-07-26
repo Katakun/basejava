@@ -127,12 +127,7 @@ public class ResumeServlet extends HttpServlet {
         } catch (NotExistStorageException e) {
             storage.save(r);
         }
-        if (fullName.isEmpty()) {
-            request.setAttribute("resume", r);
-            request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp").forward(request, response);
-        } else {
-            response.sendRedirect("resume");
-        }
+        response.sendRedirect("resume");
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
